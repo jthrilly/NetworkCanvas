@@ -2,6 +2,8 @@
 /* exported Sociogram */
 /*jshint bitwise: false*/
 
+
+
 // Can be replaced with npm module once v0.9.5 reaches upstream.
 module.exports = function Sociogram() {
 	'use strict';
@@ -51,8 +53,8 @@ module.exports = function Sociogram() {
 
 	// Adjusts the size of text so that it will always fit inside a given shape.
 	function padText(text, container, amount){
-		while ((text.width() * 1.1)<container.width()-(amount*2)) {
-			text.fontSize(text.fontSize() * 1.1);
+		while ((text.width() * 1.1)<(container.width()-(amount*2))) {
+			text.fontSize(text.fontSize() * 0.5);
 			text.y((container.height() - text.height())/2);
 		}
 		text.setX( container.getX() - text.getWidth()/2 );
@@ -248,7 +250,7 @@ module.exports = function Sociogram() {
 			id: nodeID,
 			label: 'Undefined',
 			size: sociogram.settings.defaultNodeSize,
-			color: 'rgb(0,0,0)',
+			color: 'rgb(255,255,255)',
 			strokeWidth: 4,
 			draggable: dragStatus,
 			dragDistance: 20
@@ -312,9 +314,11 @@ module.exports = function Sociogram() {
 
 		var nodeLabel = new Konva.Text({
 			text: nodeOptions.label,
+			// width: nodeOptions.size*2
 			// fontSize: 20,
 			fontFamily: 'Lato',
-			fill: 'white',
+			fill: 'black',
+			wrap: 'word',
 			align: 'center',
 			// offsetX: (nodeOptions.size*-1)-10, //left right
 			// offsetY:(nodeOptions.size*1)-10, //up down
@@ -458,9 +462,6 @@ module.exports = function Sociogram() {
 						type: sociogram.settings.edgeType
 					};
 
-					edgeProperties[sociogram.settings.variables[0]] = 'perceived';
-
-
 					if (sociogram.settings.network.edgeExists(edgeProperties) === true) {
 						note.debug('Sociogram removing edge.');
 						sociogram.settings.network.removeEdge(sociogram.settings.network.getEdges(edgeProperties));
@@ -522,7 +523,7 @@ module.exports = function Sociogram() {
 
 		});
 
-		padText(nodeLabel,nodeShape,10);
+		padText(nodeLabel,nodeShape,30);
 
 		nodeGroup.add(nodeShape);
 		nodeGroup.add(nodeLabel);
@@ -651,6 +652,7 @@ module.exports = function Sociogram() {
 	// Main initialisation functions
 
 	sociogram.initKinetic = function () {
+		Konva.pixelRatio=2;
 		// Initialise KineticJS stage
 		stage = new Konva.Stage({
 			container: 'kineticCanvas',

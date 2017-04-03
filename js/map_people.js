@@ -23,10 +23,9 @@ module.exports = function GeoInterface() {
         prompt: 'Where does %alter% live?',
         variable: {
 
-            label:'res_chicago_location_t0',
+            label:'res_location_t0',
             other_values: [
-                {label: 'I live outside Chicago', value: 'outside_chicago'},
-                {label: 'I am currently homeless', value: 'homeless'}
+                {label: 'Person is currently homeless', value: 'homeless'}
             ]
         }
     };
@@ -35,13 +34,13 @@ module.exports = function GeoInterface() {
  	var currentPersonIndex = 0;
  	var geojson;
  	var mapNodeClicked = false;
-    var colors = ['#67c2d4','#1ECD97','#B16EFF','#FA920D','#e85657','#20B0CA','#FF2592','#153AFF','#8708FF'];
+  var colors = ['#67c2d4','#1ECD97','#B16EFF','#FA920D','#e85657','#20B0CA','#FF2592','#153AFF','#8708FF'];
 
   	// Private functions
 
     function highlightFeature(e) {
         var layer = e.target;
-        leaflet.fitBounds(e.target.getBounds(), {maxZoom:14});
+        leaflet.fitBounds(e.target.getBounds(), {maxZoom:6});
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -57,7 +56,7 @@ module.exports = function GeoInterface() {
 
     function selectFeature(e) {
         var layer = e;
-        leaflet.fitBounds(e.getBounds(), {maxZoom:14});
+        leaflet.fitBounds(e.getBounds(), {maxZoom:4});
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -86,7 +85,7 @@ module.exports = function GeoInterface() {
 
     function resetPosition() {
         note.debug('resetPosition()');
-        // leaflet.setView([41.798395426119534,-87.839671372338884], 11);
+        // leaflet.setView([41.798395426119534,-87.839671372338884], 6);
     }
 
 
@@ -110,17 +109,6 @@ module.exports = function GeoInterface() {
         window.dispatchEvent(log);
         var layer = e.target;
         var properties, targetID;
-
-        // remove HIV service nodes  and edges if present.
-       var serviceNodes = window.network.getNodes({type_t0: 'HIVService'});
-
-       $.each(serviceNodes, function(index, value) {
-           console.log('removing');
-           window.network.removeNode(value.id);
-       });
-
-       var serviceEdges = window.network.getEdges({type: 'HIVService'});
-       window.network.removeEdges(serviceEdges);
 
         // is there a map node already selected?
         if (mapNodeClicked === false) {
@@ -172,7 +160,6 @@ module.exports = function GeoInterface() {
                     targetID = edges[currentPersonIndex].id;
                     window.network.updateEdge(targetID, properties);
                 }
-
 
                 // TODO: Different node clicked. Reset the style and then mark the new one as clicked.
             }
@@ -239,7 +226,7 @@ module.exports = function GeoInterface() {
 
        var serviceEdges = window.network.getEdges({type: 'HIVService'});
        window.network.removeEdges(serviceEdges);
-       
+
         var option = $(this).data('value');
         resetAllHighlights();
         var properties = {}, targetID;
@@ -300,8 +287,10 @@ module.exports = function GeoInterface() {
 
   		// Initialize the map, point it at the #map element and center it on Chicago
         leaflet = window.L.map('map', {
-            maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
-            zoomControl: false
+            // maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
+            zoomControl: false,
+            center: [31.505, -0.09],
+            zoom:3
         });
 
         window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -309,12 +298,9 @@ module.exports = function GeoInterface() {
             mapID: 'newest',
             app_id: 'FxdAZ7O0Wh568CHyJWKV',
             app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
-            base: 'base',
-            minZoom: 0,
-            maxZoom: 20
-        }).addTo(leaflet);
+            base: 'base'
+        }, { noWrap: true}).addTo(leaflet);
 
-        leaflet.setView([41.798395426119534,-87.839671372338884], 11);
 
         $.ajax({
           	dataType: 'json',

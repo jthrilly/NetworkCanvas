@@ -70,8 +70,7 @@ module.exports = function ListSelect() {
     listSelect.init = function(options) {
         window.tools.extend(listSelect.options, options);
         // Add header and subheader
-        listSelect.options.targetEl.append('<h1 class="text-center">'+listSelect.options.heading+'</h1>');
-        listSelect.options.targetEl.append('<p class="lead text-center">'+listSelect.options.subheading+'</p>');
+        listSelect.options.targetEl.append('<div class="question-container"><h1 class="text-center">'+listSelect.options.heading+'</h1></div>');
         listSelect.options.targetEl.append('<div class="form-group list-container"></div>');
 
         $.each(listSelect.options.variables, function(index,value) {

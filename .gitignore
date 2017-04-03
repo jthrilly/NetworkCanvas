@@ -9,3 +9,4 @@ buildTmp/*
 www/protocols/*
 !www/protocols/default
 Icon^M^M
+.DS_Store

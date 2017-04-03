@@ -1,0 +1,28 @@
+<div class="container full-height text-center">
+
+</div>
+
+<script>
+
+var ordbin = new window.netCanvas.Modules.OrdBin();
+ordbin.init({
+	targetEl: $('.container'),
+	edgeType: 'Dyad',
+	criteria: {
+		type:'Dyad',
+		from: window.network.getNodes({type_t0:'Ego'})[0].id
+	},
+	variable: {
+		label:'comm_t0',
+		values: [
+			{label:'Almost every day', value: 3},
+			{label:'At least once a week', value: 2},
+			{label:'At least once a month', value: 1},
+			{label:'Less than once a month', value: 0}
+		]
+	},
+	heading: "On average, how often do you usually talk to each of these people?",
+	subheading: ""
+});
+
+</script>

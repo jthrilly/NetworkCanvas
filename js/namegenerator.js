@@ -13,12 +13,8 @@ module.exports = function Namegenerator() {
         subheading: 'And this is a default subheading',
         panels: [],
         roles: {
-            'Friend': ['Best Friend','Friend','Ex-friend','Other type'],
-            'Family / Relative': ['Parent / Guardian','Brother / Sister','Grandparent','Other Family','Chosen Family'],
-            'Romantic / Sexual Partner': ['Boyfriend / Girlfriend','Ex-Boyfriend / Ex-Girlfriend','Booty Call / Fuck Buddy / Hook Up','One Night Stand','Other type of Partner'],
-            'Acquaintance / Associate': ['Coworker / Colleague','Classmate','Roommate','Friend of a Friend','Neighbor','Other'],
-            'Other Support / Source of Advice': ['Teacher / Professor','Counselor / Therapist','Community Agency Staff','Religious Leader','Mentor','Coach','Other'],
-            'Drug Use': ['Someone you use drugs with','Someone you buy drugs from'],
+            'Family / Relative': ['Spouse','Parent','Sibling','Child','Other Family'],
+            'Acquaintance / Associate': ['Coworker','Member of Group','Neighbor','Friend','Advisor','Other'],
             'Other': ['Other relationship']
         }
     };
@@ -66,20 +62,18 @@ module.exports = function Namegenerator() {
     };
 
     var inputKeypressHandler = function(e) {
+      console.log('yo');
         if (nodeBoxOpen === true) {
+
             if (e.keyCode !== 13) {
-                if($('#fname_t0').val().length > 0 && $('#fname_t0').val().length > 0) {
-
-                    var lname = $('#fname_t0').val()+' '+$('#lname_t0').val().charAt(0);
-                    if ($('#lname_t0').val().length > 0 ) {
-                        lname +='.';
+              var nameLength = $('#name_t0').val().length;
+                if(nameLength > 0) {
+                    if (nameLength < 6) {
+                      $('#nname_t0').val($('#name_t0').val());
+                    } else if (nameLength >= 6) {
+                      var shortText = jQuery.trim($('#name_t0').val()).substring(0, 10).trim(this) + ".";
+                      $('#nname_t0').val(shortText);
                     }
-
-                    var updateName = function() {
-                        $('#nname_t0').val(lname);
-                    };
-
-                    setTimeout(updateName,0);
 
                 }
             }
@@ -244,10 +238,10 @@ module.exports = function Namegenerator() {
             var color = function() {
                 var el = $('div[data-index='+editing+']');
                 var current = el.css('background-color');
-                el.stop().transition({background:'#1ECD97'}, 400, 'ease');
+                el.stop().transition({background:'#1ECD97'}, 200, 'ease');
                 setTimeout(function(){
-                    el.stop().transition({ background: current}, 800, 'ease');
-                }, 700);
+                    el.stop().transition({ background: current}, 400, 'ease');
+                }, 400);
             };
 
             var nodeID = editing;
@@ -339,14 +333,9 @@ module.exports = function Namegenerator() {
         setTimeout(function() {
             $('#ngForm').submit();
         }, 3000);
-
-        $('#fname_t0').val(namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]);
-        $('#lname_t0').val(namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]);
-        var lname = $('#fname_t0').val()+' '+$('#lname_t0').val().charAt(0);
-        if ($('#lname_t0').val().length > 0 ) {
-            lname +='.';
-        }
-        $('#nname_t0').val(lname);
+        var name = namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]+' '+namesList[Math.floor(window.tools.randomBetween(0,namesList.length))];
+        $('#name_t0').val(name);
+        $('#name_t0').trigger('keyup');
         $('#age_p_t0').val(Math.floor(window.tools.randomBetween(18,90)));
 
         setTimeout(function() {
@@ -374,7 +363,7 @@ module.exports = function Namegenerator() {
         }, 50);
         setTimeout(function() {
             $('#ngForm input:text').first().focus();
-        }, 1000);
+        }, 500);
 
         nodeBoxOpen = true;
     };
@@ -385,7 +374,7 @@ module.exports = function Namegenerator() {
         $('.newNodeBox').removeClass('open');
         setTimeout(function() { // for some reason this doenst work without an empty setTimeout
             $('.black-overlay').css({'display':'none'});
-        }, 300);
+        }, 200);
         nodeBoxOpen = false;
         $('#ngForm').trigger('reset');
         editing = false;
@@ -397,7 +386,7 @@ module.exports = function Namegenerator() {
         note.debug('Destroying namegenerator.');
         // Event listeners
         $(window.document).off('keydown', keyPressHandler);
-        $(window.document).off('keyup', '#fname_t0, #lname_t0', inputKeypressHandler);
+        $(window.document).off('keyup', '#name_t0', inputKeypressHandler);
         $(window.document).off('click', '.cancel', cancelBtnHandler);
         $(window.document).off('click', '.add-button', namegenerator.openNodeBox);
         $(window.document).off('click', '.delete-button', namegenerator.removeFromList);
@@ -500,7 +489,7 @@ module.exports = function Namegenerator() {
         $(window.document).on('click', '.cancel', cancelBtnHandler);
         $(window.document).on('click', '.add-button', namegenerator.openNodeBox);
         $(window.document).on('click', '.delete-button', namegenerator.removeFromList);
-        $(window.document).on('keyup', '#fname_t0, #lname_t0', inputKeypressHandler);
+        $(window.document).on('keyup', '#name_t0', inputKeypressHandler);
         $(window.document).on('click', '.inner-card', cardClickHandler);
         $(window.document).on('submit', '#ngForm', submitFormHandler);
         $(window.document).on('click', '.relationship', roleClickHandler);
@@ -518,7 +507,7 @@ module.exports = function Namegenerator() {
         });
 
         // add existing nodes
-        $.each(window.network.getEdges({type: 'Dyad', from: window.network.getNodes({type_t0:'Ego'})[0].id, ng_t0:namegenerator.options.variables[5].value}), function(index,value) {
+        $.each(window.network.getEdges({type: 'Dyad', from: window.network.getNodes({type_t0:'Ego'})[0].id, ng_t0:namegenerator.options.variables[4].value}), function(index,value) {
             namegenerator.addToList(value);
         });
 

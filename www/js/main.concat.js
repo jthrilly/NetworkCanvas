@@ -898,218 +898,6 @@ module.exports = function ListSelect() {
     //global vars
     var listSelect = {};
     listSelect.options = {
-        targetEl: $('.container')
-    };
-
-    var itemClickHandler = function() {
-
-
-        var nodeid = $(this).data('nodeid');
-
-
-        $(this).find('.select-icon').toggleClass('fa-circle-o fa-check-circle-o');
-
-        if ($(this).parent().hasClass('selected')) {
-            $(this).parent().removeClass('selected');
-            // uncheck boxes
-            $('[data-parent='+nodeid+']').each(function(){ $(this).prop('checked', false); });
-
-            // remove values
-            window.network.removeEdge(window.network.getEdge($(this).data('edgeid')));
-
-        } else {
-            $(this).parent().addClass('selected');
-
-            var properties = {
-                from: window.network.getEgo().id,
-                to: nodeid,
-                type: listSelect.options.edge
-            };
-
-            properties[listSelect.options.variable.label] = [];
-
-            var targetEdge = window.network.addEdge(properties);
-
-            $(this).data('edgeid', targetEdge);
-
-        }
-
-    };
-
-    var stageChangeHandler = function() {
-        listSelect.destroy();
-    };
-
-    listSelect.destroy = function() {
-        // Event Listeners
-        window.tools.notify('Destroying listSelect.',0);
-        $(window.document).off('click', '.inner', itemClickHandler);
-        window.removeEventListener('changeStageStart', stageChangeHandler, false);
-
-    };
-
-    listSelect.init = function(options) {
-        window.tools.extend(listSelect.options, options);
-        // Add header and subheader
-        listSelect.options.targetEl.append('<div class="question-container"><h1 class="text-center">'+listSelect.options.heading+'</h1></div>');
-        listSelect.options.targetEl.append('<div class="form-group service-list-container"></div>');
-
-        var edges = window.network.getEdges(listSelect.options.criteria);
-
-        $.each(edges, function(index,value) {
-          var node = window.network.getNode(value.to);
-          var targetEdge = window.network.getEdges({type: listSelect.options.edge, from: window.network.getEgo().id, to:node.id});
-
-          var el = $('<div class="item"><div class="inner" data-nodeid="'+node.id+'" data-toggle="collapse" data-target="#collapse-'+value.id+'" aria-expanded="false" aria-controls="collapse-'+value.id+'"><h4>'+node.name+'</h4></div></div>');
-
-          var markup = $('<div class="collapse" id="collapse-'+value.id+'"><div class="well"><h5>Which services did you access? Click or tap all that apply</h5><div class="check"></div></div>');
-
-            $('.service-list-container').append(el);
-
-            if (targetEdge.length > 0) {
-                el.find('.inner').data('edgeid', targetEdge[0].id);
-                $('[data-nodeid="'+node.id+'"]').parent().addClass('selected');
-                markup.addClass('in');
-            }
-
-            el.append(markup);
-
-            $.each(listSelect.options.variable.options, function(optionIndex, optionValue) {
-                var checked = '';
-                console.log(targetEdge[0]);
-                if(targetEdge.length > 0 && targetEdge[0][listSelect.options.variable.label].indexOf(optionValue) !== -1) {
-                    console.log('SELECTED: '+listSelect.options.variable.label+' '+optionValue);
-                    checked = 'selected';
-                } else {
-                    console.log('NOT SELECTED: '+listSelect.options.variable.label+' '+optionValue);
-                }
-                el.find('.check').append('<button class="btn btn-select btn-block '+checked+'" data-parent="'+node.id+'" name="'+listSelect.options.variable.label+'" type="button" id="check-'+index+optionIndex+'" data-value="'+optionValue+'">'+optionValue+'</button>');
-            });
-        });
-
-        // Event Listeners
-        $(window.document).on('click', '.inner', itemClickHandler);
-        $('[name="'+listSelect.options.variable.label+'"]').click(function() {
-            // if ($(this).is(':checked')) {
-
-            console.log('clicked');
-
-                var el = $(this).parent();
-                var id = $(this).parent().parent().parent().parent().find('.inner').data('edgeid');
-                $(this).toggleClass('selected');
-
-                var properties = {};
-                properties[listSelect.options.variable.label] = $(el).find('button.selected').map(function(){
-                    return $(this).data('value');
-                }).get();
-                console.log(properties);
-
-                window.network.updateEdge(id, properties);
-            // }
-
-        });
-        window.addEventListener('changeStageStart', stageChangeHandler, false);
-
-
-    };
-
-    return listSelect;
-};
-;/* global $, window */
-/* exported ListSelect */
-module.exports = function ListSelect() {
-    'use strict';
-    //global vars
-    var listSelect = {};
-    listSelect.options = {
-        targetEl: $('.container')
-    };
-
-    var itemClickHandler = function() {
-
-        var properties = {};
-        var nodeid = $(this).data('nodeid');
-
-
-        if ($(this).data('selected') === true) {
-            $(this).data('selected', false);
-            $(this).css({'border':'2px solid #eee','background':'#eee'});
-
-            // remove values
-            properties[listSelect.options.variable] = undefined;
-
-        } else {
-            $(this).data('selected', true);
-            $(this).css({'border':'2px solid red','background':'#E8C0C0'});
-
-            // update values
-
-            properties[listSelect.options.variable] = 1;
-        }
-
-        window.network.updateEdge(nodeid, properties);
-
-    };
-
-    var stageChangeHandler = function() {
-        listSelect.destroy();
-    };
-
-    listSelect.destroy = function() {
-        // Event Listeners
-        window.tools.notify('Destroying listSelect.',0);
-        $(window.document).off('click', '.inner', itemClickHandler);
-        window.removeEventListener('changeStageStart', stageChangeHandler, false);
-
-    };
-
-    listSelect.init = function(options) {
-        window.tools.extend(listSelect.options, options);
-        // Add header and subheader
-        listSelect.options.targetEl.append('<h1 class="text-center">'+listSelect.options.heading+'</h1>');
-        listSelect.options.targetEl.append('<div class="form-group venue-list-container"></div>');
-
-
-        var edges = window.network.getEdges(listSelect.options.criteria).sort(function(a, b){
-          var nameA=a.venue_name_t0.toLowerCase(), nameB=b.venue_name_t0.toLowerCase();
-          if (nameA < nameB)  {
-            return -1;
-          }//sort string ascending
-
-          if (nameA > nameB) {
-            return 1;
-          }
-
-          return 0; //default return value (no sorting)
-        });
-
-        $.each(edges, function(index,value) {
-            var el = $('<div class="item"><div class="inner" data-nodeid="'+value.id+'"><h4>'+value.venue_name_t0+'</h4></div></div>');
-
-            if (value[listSelect.options.variable] === 1) {
-                el.find('.inner').data('selected', true);
-                el.find('.inner').css({'border':'2px solid red','background':'#E8C0C0'});
-            }
-            $('.venue-list-container').append(el);
-        });
-
-
-        // Event Listeners
-        $(window.document).on('click', '.inner', itemClickHandler);
-        window.addEventListener('changeStageStart', stageChangeHandler, false);
-
-
-    };
-
-    return listSelect;
-};
-;/* global $, window */
-/* exported ListSelect */
-module.exports = function ListSelect() {
-    'use strict';
-    //global vars
-    var listSelect = {};
-    listSelect.options = {
         targetEl: $('.container'),
         variables: [],
         heading: 'This is a default heading',
@@ -1175,8 +963,7 @@ module.exports = function ListSelect() {
     listSelect.init = function(options) {
         window.tools.extend(listSelect.options, options);
         // Add header and subheader
-        listSelect.options.targetEl.append('<h1 class="text-center">'+listSelect.options.heading+'</h1>');
-        listSelect.options.targetEl.append('<p class="lead text-center">'+listSelect.options.subheading+'</p>');
+        listSelect.options.targetEl.append('<div class="question-container"><h1 class="text-center">'+listSelect.options.heading+'</h1></div>');
         listSelect.options.targetEl.append('<div class="form-group list-container"></div>');
 
         $.each(listSelect.options.variables, function(index,value) {
@@ -1272,7 +1059,7 @@ $(document).ready(function() {
     var moment = require('moment');
     window.moment = moment; // needed for module access.
     window.netCanvas.devMode = false;
-    window.netCanvas.studyProtocol = 'radar-protocol';
+    window.netCanvas.studyProtocol = 'default';
 
     //Is this Node.js?
     if(window.isNode) {
@@ -1417,21 +1204,10 @@ $(document).ready(function() {
     window.netCanvas.Modules.AppGenerator = require('./appgenerator.js');
     window.netCanvas.Modules.DateInterface = require('./dateinterface.js');
     window.netCanvas.Modules.OrdBin = require('./ordinalbin.js');
-    window.netCanvas.Modules.OrdBinVenue = require('./ordinalbin_venue.js');
-    window.netCanvas.Modules.OrdBinApp = require('./ordinalbin_app.js');
-    window.netCanvas.Modules.OrdBinService = require('./ordinalbin_service.js');
     window.netCanvas.Modules.IOInterface = require('./iointerface.js');
     window.netCanvas.Modules.MapPeople = require('./map_people.js');
-    window.netCanvas.Modules.MapParty = require('./map_party.js');
-    window.netCanvas.Modules.MapServices = require('./map_services.js');
-    window.netCanvas.Modules.RoleRevisit = require('./rolerevisit.js');
     window.netCanvas.Modules.ListSelect = require('./listselect.js');
-    window.netCanvas.Modules.ListSelectVenue = require('./listselect_venue.js');
-    window.netCanvas.Modules.ListSelectServices = require('./listselect_services.js');
     window.netCanvas.Modules.MultiBin = require('./multibin.js');
-    window.netCanvas.Modules.MultiBinVenue = require('./multibin_venue.js');
-    window.netCanvas.Modules.MultiBinApp = require('./multibin_app.js');
-    window.netCanvas.Modules.MultiBinService = require('./multibin_service.js');
     window.netCanvas.Modules.Sociogram = require('./sociogram.js');
 
     // Initialise the menu system – other modules depend on it being there.
@@ -1474,399 +1250,6 @@ $(document).ready(function() {
 /* exported GeoInterface */
 
 /*
-Map module.
-*/
-
-module.exports = function GeoInterface() {
-  'use strict';
-  // map globals
-  var log;
-  var taskComprehended = false;
-  var geoInterface = {};
-  geoInterface.options = {
-    network: window.network || new window.netcanvas.Module.Network(),
-    targetEl: $('.map-node-container'),
-    mode: 'edge',
-    criteria: {
-      type:'Sex',
-      from: window.network.getNodes({type_t0:'Ego'})[0].id
-    },
-    geojson: '',
-    prompt: 'Where does %alter% live?',
-    variable: {
-
-      label:'res_chicago_location_t0',
-      other_values: [
-        {label: 'I live outside Chicago', value: 'outside_chicago'},
-        {label: 'I am currently homeless', value: 'homeless'}
-      ]
-    }
-  };
-  var leaflet;
-  var edges = [];
-  var currentPersonIndex = 0;
-  var geojson;
-  var mapNodeClicked = false;
-  var colors = ['#67c2d4','#1ECD97','#B16EFF','#FA920D','#e85657','#20B0CA','#FF2592','#153AFF','#8708FF'];
-
-  // Private functions
-
-  function highlightFeature(e) {
-    var layer = e.target;
-    leaflet.fitBounds(e.target.getBounds(), {maxZoom:14});
-
-    layer.setStyle({
-      fillOpacity: 0.8,
-      fillColor: colors[1]
-    });
-
-    if (!window.L.Browser.ie && !window.L.Browser.opera) {
-      layer.bringToFront();
-    }
-
-    mapNodeClicked = layer.feature.properties.name;
-  }
-
-  function selectFeature(e) {
-    var layer = e;
-    leaflet.fitBounds(e.getBounds(), {maxZoom:14});
-
-    layer.setStyle({
-      fillOpacity: 0.8,
-      fillColor: colors[1]
-    });
-
-    if (!window.L.Browser.ie && !window.L.Browser.opera) {
-      layer.bringToFront();
-    }
-  }
-
-  function resetHighlight(e) {
-    $('.map-node-location').html('');
-    mapNodeClicked = false;
-    geojson.resetStyle(e.target);
-  }
-
-  function resetAllHighlights() {
-    $('.map-node-location').html('');
-    mapNodeClicked = false;
-    $.each(geojson._layers, function(index,value) {
-      geojson.resetStyle(value);
-    });
-  }
-
-  function resetPosition() {
-    // leaflet.setView([41.798395426119534,-87.839671372338884], 11);
-  }
-
-
-  function toggleFeature(e) {
-    if (taskComprehended === false) {
-      var eventProperties = {
-        zoomLevel: leaflet.getZoom(),
-        stage: window.netCanvas.Modules.session.currentStage(),
-        timestamp: new Date()
-      };
-      log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-      window.dispatchEvent(log);
-      taskComprehended = true;
-    }
-
-    var mapEventProperties = {
-      zoomLevel: leaflet.getZoom(),
-      timestamp: new Date()
-    };
-    log = new window.CustomEvent('log', {'detail':{'eventType': 'mapMarkerPlaced', 'eventObject':mapEventProperties}});
-    window.dispatchEvent(log);
-    var layer = e.target;
-    var properties, targetID;
-
-    // is there a map node already selected?
-    if (mapNodeClicked === false) {
-      // no map node selected, so highlight this one and mark a map node as having been selected.
-      highlightFeature(e);
-      // updateInfoBox('You se{lected: <strong>'+layer.feature.properties.name+'</strong>. Click the "next" button to place the next person.');
-
-      // Update edge with this info
-      properties = {};
-      properties[geoInterface.options.variable.value] = layer.feature.properties.name;
-
-
-      if (geoInterface.options.mode === 'node') {
-        targetID = geoInterface.options.network.getEgo().id;
-        window.network.updateNode(targetID, properties);
-      } else if (geoInterface.options.mode === 'edge') {
-        targetID = edges[currentPersonIndex].id;
-        window.network.updateEdge(targetID, properties);
-      }
-
-      $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+layer.feature.properties.name);
-    } else {
-      // Map node already selected. Have we clicked the same one again?
-      if (layer.feature.properties.name === mapNodeClicked) {
-        // Same map node clicked. Reset the styles and mark no node as being selected
-        resetHighlight(e);
-        mapNodeClicked = false;
-        properties = {};
-        properties[geoInterface.options.variable.value] = undefined;
-
-        if (geoInterface.options.mode === 'node') {
-          targetID = geoInterface.options.network.getEgo().id;
-          window.network.updateNode(targetID, properties);
-        } else if (geoInterface.options.mode === 'edge') {
-          targetID = edges[currentPersonIndex].id;
-          window.network.updateEdge(targetID, properties);
-        }
-
-      } else {
-        resetAllHighlights();
-        highlightFeature(e);
-        properties = {};
-        properties[geoInterface.options.variable.value] = layer.feature.properties.name;
-
-        if (geoInterface.options.mode === 'node') {
-          targetID = geoInterface.options.network.getEgo().id;
-          window.network.updateNode(targetID, properties);
-        } else if (geoInterface.options.mode === 'edge') {
-          targetID = edges[currentPersonIndex].id;
-          window.network.updateEdge(targetID, properties);
-        }
-
-
-        // TODO: Different node clicked. Reset the style and then mark the new one as clicked.
-      }
-
-    }
-
-  }
-
-  function onEachFeature(feature, layer) {
-    layer.on({
-      click: toggleFeature
-    });
-
-    window.addEventListener('changeStageStart', function() {
-      layer.off({
-        click: toggleFeature
-      });
-    }, false);
-  }
-
-  function highlightCurrent() {
-    if (typeof edges[currentPersonIndex] !== 'undefined' && edges[currentPersonIndex][geoInterface.options.variable.value] !== undefined) {
-      mapNodeClicked = edges[currentPersonIndex][geoInterface.options.variable.value];
-
-      if (geoInterface.options.variable.other_options && geoInterface.options.variable.other_options.map(function(obj){ return obj.value; }).indexOf(edges[currentPersonIndex][geoInterface.options.variable.value]) !== -1) {
-        resetPosition();
-        var text = edges[currentPersonIndex][geoInterface.options.variable.value];
-        $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+text);
-      } else {
-        $.each(geojson._layers, function(index,value) {
-          if (value.feature.properties.name === edges[currentPersonIndex][geoInterface.options.variable.value]) {
-            $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+edges[currentPersonIndex][geoInterface.options.variable.value]);
-            selectFeature(value);
-          }
-        });
-      }
-
-    } else {
-      resetPosition();
-    }
-
-  }
-
-  function safePrompt() {
-    var name;
-    if (geoInterface.options.mode === 'node') {
-      name = 'you';
-    } else if (geoInterface.options.mode === 'edge') {
-      name = typeof edges[currentPersonIndex] !== 'undefined' ? edges[currentPersonIndex].venue_name_t0 : 'Venue';
-    }
-
-    return geoInterface.options.prompt.replace('%alter%', name);
-  }
-
-  geoInterface.setOtherOption = function() {
-    var option = $(this).data('value');
-    resetAllHighlights();
-    var properties = {}, targetID;
-    properties[geoInterface.options.variable.value] = option;
-    if (geoInterface.options.mode === 'node') {
-      targetID = geoInterface.options.network.getEgo().id;
-      window.network.updateNode(targetID, properties);
-    } else if (geoInterface.options.mode === 'edge') {
-      targetID = edges[currentPersonIndex].id;
-      window.network.updateEdge(targetID, properties);
-    }
-
-    $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+option);
-  };
-
-  var stageChangeHandler = function() {
-    geoInterface.destroy();
-  };
-
-  // Public methods
-
-  geoInterface.nextPerson = function() {
-
-    if (currentPersonIndex < edges.length-1) {
-      resetAllHighlights();
-      currentPersonIndex++;
-      $('.current-id').html(currentPersonIndex+1);
-
-      $('.map-node-status').html(safePrompt());
-
-      // if variable already set, highlight it and zoom to it.
-      highlightCurrent();
-
-      geoInterface.updateNavigation();
-    }
-
-
-  };
-
-  geoInterface.getLeaflet = function() {
-    return leaflet;
-  };
-
-  geoInterface.previousPerson = function() {
-    if (currentPersonIndex > 0) {
-
-      resetAllHighlights();
-      currentPersonIndex--;
-      $('.current-id').html(currentPersonIndex+1);
-      $('.map-node-status').html(safePrompt());
-
-      // if variable already set, highlight it and zoom to it.
-      highlightCurrent();
-      geoInterface.updateNavigation();
-    }
-  };
-
-  geoInterface.init = function(options) {
-    window.tools.extend(geoInterface.options, options);
-
-    // Initialize the map, point it at the #map element and center it on Chicago
-    leaflet = window.L.map('map', {
-      maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
-      zoomControl: false
-    });
-
-    window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: 'FxdAZ7O0Wh568CHyJWKV',
-      app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
-      base: 'base',
-      minZoom: 0,
-      maxZoom: 20
-    }).addTo(leaflet);
-
-            leaflet.setView([41.798395426119534,-87.839671372338884], 11);
-
-    $.ajax({
-      dataType: 'json',
-      url: geoInterface.options.geojson,
-      success: function(data) {
-        geojson = window.L.geoJson(data, {
-          onEachFeature: onEachFeature,
-          style: function () {
-            return {weight:1,fillOpacity:0,strokeWidth:0.2, color:colors[1]};
-          }
-        }).addTo(leaflet);
-
-        // Load initial node
-        edges = geoInterface.options.network.getEdges(geoInterface.options.criteria, function (results) {
-          // Previously only showedhouse parties or somewhere else
-          // Now, any venue that doesnt exactly match one of the autocomplete venues.
-
-
-            var filteredResults = [];
-            $.each(results, function(index,value) {
-                if (value.venue_type_t0 === 'House Party' || value.venue_type_t0 === 'Somewhere Else' || window.netCanvas.Modules.session.protocolData.autocompleteVenues.indexOf(value.venue_name_t0) === -1) {
-                    filteredResults.push(value);
-                }
-            });
-
-            return filteredResults;
-        });
-
-
-        $('.map-counter').html('<span class="current-id">1</span>/'+edges.length);
-
-        if (edges.length > 0) {
-          $('.map-node-status').html(safePrompt());
-        }
-
-
-
-
-        // Highlight initial value, if set
-        highlightCurrent();
-
-        geoInterface.updateNavigation();
-
-      }
-    });
-
-    geoInterface.drawUIComponents();
-
-    // Events
-    window.addEventListener('changeStageStart', stageChangeHandler, false);
-    $('.map-back').on('click', geoInterface.previousPerson);
-    $('.map-forwards').on('click', geoInterface.nextPerson);
-    $('.other-option').on('click', geoInterface.setOtherOption);
-
-  };
-
-  geoInterface.updateNavigation = function() {
-
-    if (currentPersonIndex === 0) {
-      $('.map-back').hide();
-    } else {
-      $('.map-back').show();
-    }
-
-    if (currentPersonIndex === edges.length-1) {
-      $('.map-forwards').hide();
-    } else {
-      $('.map-forwards').show();
-    }
-
-    if (edges.length === 1) {
-      $('.map-forwards, .map-back, .map-counter').hide();
-    }
-  };
-
-  geoInterface.drawUIComponents = function() {
-    note.debug('geoInterface.drawUIComponents()');
-    geoInterface.options.targetEl.append('<div class="container map-node-container"><div class="row" style="width:100%"><div class="col-sm-4 text-left"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-back"><span class="glyphicon glyphicon-arrow-left"></span></span></div></div><div class="col-sm-4 text-center"><p class="lead map-counter"></p></div><div class="col-sm-4 text-right"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-forwards"><span class="glyphicon glyphicon-arrow-right"></span></span></div></div></div><div class="row form-group"><div class="col-sm-12 text-center"><p class="lead map-node-status"></p><p class="lead map-node-location"></p></div></div><div class="row"></div>');
-    $('.map-node-status').html(safePrompt());
-
-    if (geoInterface.options.variable.other_options && geoInterface.options.variable.other_options.length > 0) {
-      $('.map-node-container').append('<div class="col-sm-12 form-group other-options"></div>');
-      $.each(geoInterface.options.variable.other_options, function(otherIndex, otherValue) {
-        $('.other-options').append('<button class="btn '+otherValue.btnClass+' btn-block other-option" data-value="'+otherValue.value+'">'+otherValue.label+'</button>');
-      });
-    }
-  };
-
-  geoInterface.destroy = function() {
-    // Used to unbind events
-    leaflet.remove();
-    window.removeEventListener('changeStageStart', stageChangeHandler, false);
-    $('.map-back').off('click', geoInterface.previousPerson);
-    $('.map-forwards').off('click', geoInterface.nextPerson);
-    $('.other-option').on('click', geoInterface.setOtherOption);
-  };
-
-  return geoInterface;
-};
-;/* global $, window, note */
-/* exported GeoInterface */
-
-/*
  Map module.
 */
 
@@ -1888,10 +1271,9 @@ module.exports = function GeoInterface() {
         prompt: 'Where does %alter% live?',
         variable: {
 
-            label:'res_chicago_location_t0',
+            label:'res_location_t0',
             other_values: [
-                {label: 'I live outside Chicago', value: 'outside_chicago'},
-                {label: 'I am currently homeless', value: 'homeless'}
+                {label: 'Person is currently homeless', value: 'homeless'}
             ]
         }
     };
@@ -1900,13 +1282,13 @@ module.exports = function GeoInterface() {
  	var currentPersonIndex = 0;
  	var geojson;
  	var mapNodeClicked = false;
-    var colors = ['#67c2d4','#1ECD97','#B16EFF','#FA920D','#e85657','#20B0CA','#FF2592','#153AFF','#8708FF'];
+  var colors = ['#67c2d4','#1ECD97','#B16EFF','#FA920D','#e85657','#20B0CA','#FF2592','#153AFF','#8708FF'];
 
   	// Private functions
 
     function highlightFeature(e) {
         var layer = e.target;
-        leaflet.fitBounds(e.target.getBounds(), {maxZoom:14});
+        leaflet.fitBounds(e.target.getBounds(), {maxZoom:6});
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -1922,7 +1304,7 @@ module.exports = function GeoInterface() {
 
     function selectFeature(e) {
         var layer = e;
-        leaflet.fitBounds(e.getBounds(), {maxZoom:14});
+        leaflet.fitBounds(e.getBounds(), {maxZoom:4});
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -1951,7 +1333,7 @@ module.exports = function GeoInterface() {
 
     function resetPosition() {
         note.debug('resetPosition()');
-        // leaflet.setView([41.798395426119534,-87.839671372338884], 11);
+        // leaflet.setView([41.798395426119534,-87.839671372338884], 6);
     }
 
 
@@ -1975,17 +1357,6 @@ module.exports = function GeoInterface() {
         window.dispatchEvent(log);
         var layer = e.target;
         var properties, targetID;
-
-        // remove HIV service nodes  and edges if present.
-       var serviceNodes = window.network.getNodes({type_t0: 'HIVService'});
-
-       $.each(serviceNodes, function(index, value) {
-           console.log('removing');
-           window.network.removeNode(value.id);
-       });
-
-       var serviceEdges = window.network.getEdges({type: 'HIVService'});
-       window.network.removeEdges(serviceEdges);
 
         // is there a map node already selected?
         if (mapNodeClicked === false) {
@@ -2037,7 +1408,6 @@ module.exports = function GeoInterface() {
                     targetID = edges[currentPersonIndex].id;
                     window.network.updateEdge(targetID, properties);
                 }
-
 
                 // TODO: Different node clicked. Reset the style and then mark the new one as clicked.
             }
@@ -2104,7 +1474,7 @@ module.exports = function GeoInterface() {
 
        var serviceEdges = window.network.getEdges({type: 'HIVService'});
        window.network.removeEdges(serviceEdges);
-       
+
         var option = $(this).data('value');
         resetAllHighlights();
         var properties = {}, targetID;
@@ -2165,8 +1535,10 @@ module.exports = function GeoInterface() {
 
   		// Initialize the map, point it at the #map element and center it on Chicago
         leaflet = window.L.map('map', {
-            maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
-            zoomControl: false
+            // maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
+            zoomControl: false,
+            center: [31.505, -0.09],
+            zoom:3
         });
 
         window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -2174,12 +1546,9 @@ module.exports = function GeoInterface() {
             mapID: 'newest',
             app_id: 'FxdAZ7O0Wh568CHyJWKV',
             app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
-            base: 'base',
-            minZoom: 0,
-            maxZoom: 20
-        }).addTo(leaflet);
+            base: 'base'
+        }, { noWrap: true}).addTo(leaflet);
 
-        leaflet.setView([41.798395426119534,-87.839671372338884], 11);
 
         $.ajax({
           	dataType: 'json',
@@ -4118,7 +3487,6 @@ module.exports = function MultiBin() {
 
 	};
 
-
 	var nodeClickHandler = function(e) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -4270,27 +3638,28 @@ module.exports = function MultiBin() {
 		// bin container
         multiBin.options.targetEl.append('<div class="node-bin-container"></div>');
 
-
-		var containerWidth = $('.node-bin-container').outerWidth();
-		var containerHeight = $('.node-bin-container').outerHeight();
+		var containerWidth = $('.node-bin-container').innerWidth()-40;
+		var containerHeight = $('.node-bin-container').innerHeight()-40;
 		var number = multiBin.options.variable.values.length;
-		var rowThresh = number > 4 ? Math.floor(number*0.66) : 4;
+		var rowThresh = number > 3 ? Math.floor(number*0.66) : 4;
 		var itemSize = 0;
 		var rows = Math.ceil(number/rowThresh);
+		console.log('width: ', containerWidth);
+		console.log('height: ', containerHeight);
+		itemSize = number >= rowThresh ? containerWidth/rowThresh : containerWidth/number;
+		console.log('dual mode');
 
-		if (containerWidth >= containerHeight) {
-			itemSize = number >= rowThresh ? containerWidth/rowThresh : containerWidth/number;
+		console.log('row thresh: ', rowThresh);
 
-			while(itemSize > (containerHeight/rows)) {
-				itemSize = itemSize*0.99;
-			}
+		console.log('Item size: ', itemSize);
+		console.log('containerheight/rows: ', (containerHeight/rows));
+		console.log('(containerWidth/rowThresh): ', (containerWidth/rowThresh));
 
-		} else {
-			itemSize = number >= rowThresh ? containerHeight/rowThresh : containerHeight/number;
-
-			while(itemSize > containerWidth) {
-				itemSize = itemSize*0.99;
-			}
+		while(itemSize > (containerHeight/rows) || itemSize > (containerWidth/rowThresh)) {
+			console.log('Item size: ', itemSize);
+			console.log('containerheight/rows: ', (containerHeight/rows));
+			console.log('(containerWidth/rowThresh): ', (containerWidth/rowThresh));
+			itemSize = itemSize*0.95;
 		}
 
 		// get all edges
@@ -4458,12 +3827,8 @@ module.exports = function Namegenerator() {
         subheading: 'And this is a default subheading',
         panels: [],
         roles: {
-            'Friend': ['Best Friend','Friend','Ex-friend','Other type'],
-            'Family / Relative': ['Parent / Guardian','Brother / Sister','Grandparent','Other Family','Chosen Family'],
-            'Romantic / Sexual Partner': ['Boyfriend / Girlfriend','Ex-Boyfriend / Ex-Girlfriend','Booty Call / Fuck Buddy / Hook Up','One Night Stand','Other type of Partner'],
-            'Acquaintance / Associate': ['Coworker / Colleague','Classmate','Roommate','Friend of a Friend','Neighbor','Other'],
-            'Other Support / Source of Advice': ['Teacher / Professor','Counselor / Therapist','Community Agency Staff','Religious Leader','Mentor','Coach','Other'],
-            'Drug Use': ['Someone you use drugs with','Someone you buy drugs from'],
+            'Family / Relative': ['Spouse','Parent','Sibling','Child','Other Family'],
+            'Acquaintance / Associate': ['Coworker','Member of Group','Neighbor','Friend','Advisor','Other'],
             'Other': ['Other relationship']
         }
     };
@@ -4511,20 +3876,18 @@ module.exports = function Namegenerator() {
     };
 
     var inputKeypressHandler = function(e) {
+      console.log('yo');
         if (nodeBoxOpen === true) {
+
             if (e.keyCode !== 13) {
-                if($('#fname_t0').val().length > 0 && $('#fname_t0').val().length > 0) {
-
-                    var lname = $('#fname_t0').val()+' '+$('#lname_t0').val().charAt(0);
-                    if ($('#lname_t0').val().length > 0 ) {
-                        lname +='.';
+              var nameLength = $('#name_t0').val().length;
+                if(nameLength > 0) {
+                    if (nameLength < 6) {
+                      $('#nname_t0').val($('#name_t0').val());
+                    } else if (nameLength >= 6) {
+                      var shortText = jQuery.trim($('#name_t0').val()).substring(0, 10).trim(this) + ".";
+                      $('#nname_t0').val(shortText);
                     }
-
-                    var updateName = function() {
-                        $('#nname_t0').val(lname);
-                    };
-
-                    setTimeout(updateName,0);
 
                 }
             }
@@ -4689,10 +4052,10 @@ module.exports = function Namegenerator() {
             var color = function() {
                 var el = $('div[data-index='+editing+']');
                 var current = el.css('background-color');
-                el.stop().transition({background:'#1ECD97'}, 400, 'ease');
+                el.stop().transition({background:'#1ECD97'}, 200, 'ease');
                 setTimeout(function(){
-                    el.stop().transition({ background: current}, 800, 'ease');
-                }, 700);
+                    el.stop().transition({ background: current}, 400, 'ease');
+                }, 400);
             };
 
             var nodeID = editing;
@@ -4784,14 +4147,9 @@ module.exports = function Namegenerator() {
         setTimeout(function() {
             $('#ngForm').submit();
         }, 3000);
-
-        $('#fname_t0').val(namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]);
-        $('#lname_t0').val(namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]);
-        var lname = $('#fname_t0').val()+' '+$('#lname_t0').val().charAt(0);
-        if ($('#lname_t0').val().length > 0 ) {
-            lname +='.';
-        }
-        $('#nname_t0').val(lname);
+        var name = namesList[Math.floor(window.tools.randomBetween(0,namesList.length))]+' '+namesList[Math.floor(window.tools.randomBetween(0,namesList.length))];
+        $('#name_t0').val(name);
+        $('#name_t0').trigger('keyup');
         $('#age_p_t0').val(Math.floor(window.tools.randomBetween(18,90)));
 
         setTimeout(function() {
@@ -4819,7 +4177,7 @@ module.exports = function Namegenerator() {
         }, 50);
         setTimeout(function() {
             $('#ngForm input:text').first().focus();
-        }, 1000);
+        }, 500);
 
         nodeBoxOpen = true;
     };
@@ -4830,7 +4188,7 @@ module.exports = function Namegenerator() {
         $('.newNodeBox').removeClass('open');
         setTimeout(function() { // for some reason this doenst work without an empty setTimeout
             $('.black-overlay').css({'display':'none'});
-        }, 300);
+        }, 200);
         nodeBoxOpen = false;
         $('#ngForm').trigger('reset');
         editing = false;
@@ -4842,7 +4200,7 @@ module.exports = function Namegenerator() {
         note.debug('Destroying namegenerator.');
         // Event listeners
         $(window.document).off('keydown', keyPressHandler);
-        $(window.document).off('keyup', '#fname_t0, #lname_t0', inputKeypressHandler);
+        $(window.document).off('keyup', '#name_t0', inputKeypressHandler);
         $(window.document).off('click', '.cancel', cancelBtnHandler);
         $(window.document).off('click', '.add-button', namegenerator.openNodeBox);
         $(window.document).off('click', '.delete-button', namegenerator.removeFromList);
@@ -4945,7 +4303,7 @@ module.exports = function Namegenerator() {
         $(window.document).on('click', '.cancel', cancelBtnHandler);
         $(window.document).on('click', '.add-button', namegenerator.openNodeBox);
         $(window.document).on('click', '.delete-button', namegenerator.removeFromList);
-        $(window.document).on('keyup', '#fname_t0, #lname_t0', inputKeypressHandler);
+        $(window.document).on('keyup', '#name_t0', inputKeypressHandler);
         $(window.document).on('click', '.inner-card', cardClickHandler);
         $(window.document).on('submit', '#ngForm', submitFormHandler);
         $(window.document).on('click', '.relationship', roleClickHandler);
@@ -4963,7 +4321,7 @@ module.exports = function Namegenerator() {
         });
 
         // add existing nodes
-        $.each(window.network.getEdges({type: 'Dyad', from: window.network.getNodes({type_t0:'Ego'})[0].id, ng_t0:namegenerator.options.variables[5].value}), function(index,value) {
+        $.each(window.network.getEdges({type: 'Dyad', from: window.network.getNodes({type_t0:'Ego'})[0].id, ng_t0:namegenerator.options.variables[4].value}), function(index,value) {
             namegenerator.addToList(value);
         });
 
@@ -5766,681 +5124,6 @@ module.exports = function Network() {
     };
 
     return network;
-
-};
-;/* global $, window */
-/* exported OrdinalBin */
-module.exports = function OrdinalBin() {
-    'use strict';
-    //global vars
-    var ordinalBin = {};
-    var taskComprehended = false;
-    var log;
-    ordinalBin.options = {
-        targetEl: $('.container'),
-        edgeType: 'App',
-        criteria: {},
-        variable: {
-            label:'gender_p_t0',
-            values: [
-                'Female',
-                'Male',
-                'Transgender',
-                'Don\'t Know',
-                'Won\'t Answer'
-            ]
-        },
-        heading: 'Default Heading',
-        subheading: 'Default Subheading.'
-    };
-    var followup;
-
-    var stageChangeHandler = function() {
-        ordinalBin.destroy();
-    };
-
-    var followupHandler = function() {
-        var followupVal = $(this).data('value');
-        var nodeid = followup;
-        var criteria = {
-            to:nodeid
-        };
-
-        window.tools.extend(criteria, ordinalBin.options.criteria);
-        var edge = window.network.getEdges(criteria)[0];
-
-        var followupProperties = {};
-
-        followupProperties[ordinalBin.options.followup.variable] = followupVal;
-
-        window.tools.extend(edge, followupProperties);
-        window.network.updateEdge(edge.id, edge);
-        $('.followup').hide();
-    };
-
-    ordinalBin.destroy = function() {
-        // Event Listeners
-        window.tools.notify('Destroying ordinalBin.',0);
-        window.removeEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).off('click', '.followup-option', followupHandler);
-
-    };
-
-    ordinalBin.init = function(options) {
-
-        window.tools.extend(ordinalBin.options, options);
-
-        ordinalBin.options.targetEl.append('<div class="node-question-container"></div>');
-
-        // Add header and subheader
-        $('.node-question-container').append('<h1>'+ordinalBin.options.heading+'</h1>');
-        $('.node-question-container').append('<p class="lead">'+ordinalBin.options.subheading+'</p>');
-
-        // Add node bucket
-        $('.node-question-container').append('<div class="node-bucket"></div>');
-        if(typeof ordinalBin.options.followup !== 'undefined') {
-            $('.node-question-container').append('<div class="followup"><h2>'+ordinalBin.options.followup.prompt+'</h2></div>');
-            $.each(ordinalBin.options.followup.values, function(index,value) {
-                $('.followup').append('<span class="btn btn-primary btn-block followup-option" data-value="'+value.value+'">'+value.label+'</span>');
-            });
-        }
-
-        // bin container
-        ordinalBin.options.targetEl.append('<div class="ord-bin-container"></div>');
-
-        // Calculate number of bins required
-        var binNumber = ordinalBin.options.variable.values.length;
-
-        // One of these for each bin. One bin for each variable value.
-        $.each(ordinalBin.options.variable.values, function(index, value){
-
-            var newBin = $('<div class="ord-node-bin size-'+binNumber+' d'+index+'" data-index="'+index+'"><h1>'+value.label+'</h1><div class="ord-active-node-list"></div></div>');
-            newBin.data('index', index);
-            $('.ord-bin-container').append(newBin);
-            $('.d'+index).droppable({ accept: '.draggable',
-                drop: function(event, ui) {
-                    var dropped = ui.draggable;
-                    var droppedOn = $(this);
-
-                    if (ordinalBin.options.variable.values[index].value>0) {
-                        $('.followup').show();
-                        followup = $(dropped).data('node-id');
-                    }
-                    dropped.css({position:'inherit'});
-                    droppedOn.children('.ord-active-node-list').append(dropped);
-
-                    $(dropped).appendTo(droppedOn.children('.ord-active-node-list'));
-                    var properties = {};
-                    properties[ordinalBin.options.variable.label] = ordinalBin.options.variable.values[index].value;
-                    // Followup question
-
-                    // Add the attribute
-                    var edgeID = window.network.getEdges({from:window.network.getNodes({type_t0:'Ego'})[0].id,to:$(dropped).data('node-id'), type:ordinalBin.options.edgeType})[0].id;
-                    window.network.updateEdge(edgeID,properties);
-
-                    $.each($('.ord-node-bin'), function(oindex) {
-                        var length = $('.d'+oindex).children('.ord-active-node-list').children().length;
-                        if (length > 0) {
-                            var noun = 'people';
-                            if (length === 1) {
-                                noun = 'person';
-                            }
-
-                            $('.d'+oindex+' p').html(length+' '+noun+'.');
-                        } else {
-                            $('.d'+oindex+' p').html('(Empty)');
-                        }
-
-                    });
-
-                    var el = $('.d'+index);
-
-                    setTimeout(function(){
-                        el.transition({background:el.data('oldBg')}, 200, 'ease');
-                        // el.transition({ scale:1}, 200, 'ease');
-                    }, 0);
-
-                    ordinalBin.makeDraggable();
-                },
-                over: function() {
-                    $(this).data('oldBg', $(this).css('background-color'));
-                    $(this).stop().transition({background:'rgba(255, 193, 0, 1.0)'}, 400, 'ease');
-
-                },
-                out: function() {
-                    $(this).stop().transition({background:$(this).data('oldBg')}, 500, 'ease');
-                }
-            });
-
-        });
-
-        // get all edges
-        var edges = window.network.getEdges(ordinalBin.options.criteria);
-
-        // Add edges to bucket or to bins if they already have variable value.
-        $.each(edges, function(index,value) {
-            var dyadEdge;
-            if (ordinalBin.options.criteria.type !== 'App') {
-                dyadEdge = window.network.getEdges({from: value.from, to:value.to, type:'App'})[0];
-            }
-
-            if (value[ordinalBin.options.variable.label] !== undefined && value[ordinalBin.options.variable.label] !== '') {
-                index = 'error';
-                $.each(ordinalBin.options.variable.values, function(vindex, vvalue) {
-                    if (value[ordinalBin.options.variable.label] === vvalue.value) {
-                        index = vindex;
-                    }
-                });
-
-                if (ordinalBin.options.criteria.type !== 'App') {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.app_name_t0+'</div>');
-                } else {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.app_name_t0+'</div>');
-                }
-            } else {
-                if (ordinalBin.options.criteria.type !== 'App') {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.app_name_t0+'</div>');
-                } else {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.app_name_t0+'</div>');
-                }
-
-            }
-
-        });
-        ordinalBin.makeDraggable();
-
-        // Event Listeners
-        window.addEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).on('click', '.followup-option', followupHandler);
-    };
-
-    ordinalBin.makeDraggable = function() {
-        $('.draggable').draggable({
-            cursor: 'pointer',
-            revert: 'invalid',
-            appendTo: 'body',
-            scroll: false,
-            helper: 'clone',
-            start: function() {
-
-                // if ($(this).css('top') !== 'auto' && $(this).css('top') !== '0px') {
-
-                //     $(this).css({position:'absolute'});
-                // } else {
-
-                //     $(this).css({position:'relative'});
-                // }
-
-                $(this).parent().css('overflow','inherit');
-                if (taskComprehended === false) {
-                    var eventProperties = {
-                        stage: window.netCanvas.Modules.session.currentStage(),
-                        timestamp: new Date()
-                    };
-                    log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-                    window.dispatchEvent(log);
-                    taskComprehended = true;
-                }
-
-                // $('.ord-node-bin').css({overflow:'hidden'});
-            },
-            stop: function() {
-                $(this).css({position:'inerit'});
-                $('.ord-node-bin').css({overflowY:'scroll'});
-            }
-        });
-    };
-
-return ordinalBin;
-
-};
-;/* global $, window */
-/* exported OrdinalBin */
-module.exports = function OrdinalBin() {
-    'use strict';
-    //global vars
-    var ordinalBin = {};
-    var taskComprehended = false;
-    var log;
-    ordinalBin.options = {
-        targetEl: $('.container'),
-        edgeType: 'Venue',
-        criteria: {},
-        variable: {
-            label:'gender_p_t0',
-            values: [
-                'Female',
-                'Male',
-                'Transgender',
-                'Don\'t Know',
-                'Won\'t Answer'
-            ]
-        },
-        heading: 'Default Heading',
-        subheading: 'Default Subheading.'
-    };
-    var followup;
-
-    var stageChangeHandler = function() {
-        ordinalBin.destroy();
-    };
-
-    var followupHandler = function() {
-        var followupVal = $(this).data('value');
-        var nodeid = followup;
-        var criteria = {
-            to:nodeid
-        };
-
-        window.tools.extend(criteria, ordinalBin.options.criteria);
-        var edge = window.network.getEdges(criteria)[0];
-
-        var followupProperties = {};
-
-        followupProperties[ordinalBin.options.followup.variable] = followupVal;
-
-        window.tools.extend(edge, followupProperties);
-        window.network.updateEdge(edge.id, edge);
-        $('.followup').hide();
-    };
-
-    ordinalBin.destroy = function() {
-        // Event Listeners
-        window.tools.notify('Destroying ordinalBin.',0);
-        window.removeEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).off('click', '.followup-option', followupHandler);
-
-    };
-
-    ordinalBin.init = function(options) {
-
-        window.tools.extend(ordinalBin.options, options);
-
-        ordinalBin.options.targetEl.append('<div class="node-question-container"></div>');
-
-        // Add header and subheader
-        $('.node-question-container').append('<h1>'+ordinalBin.options.heading+'</h1>');
-        $('.node-question-container').append('<p class="lead">'+ordinalBin.options.subheading+'</p>');
-
-        // Add node bucket
-        $('.node-question-container').append('<div class="node-bucket"></div>');
-        if(typeof ordinalBin.options.followup !== 'undefined') {
-            $('.node-question-container').append('<div class="followup"><h2>'+ordinalBin.options.followup.prompt+'</h2></div>');
-            $.each(ordinalBin.options.followup.values, function(index,value) {
-                $('.followup').append('<span class="btn btn-primary btn-block followup-option" data-value="'+value.value+'">'+value.label+'</span>');
-            });
-        }
-
-        // bin container
-        ordinalBin.options.targetEl.append('<div class="ord-bin-container"></div>');
-
-        // Calculate number of bins required
-        var binNumber = ordinalBin.options.variable.values.length;
-
-        // One of these for each bin. One bin for each variable value.
-        $.each(ordinalBin.options.variable.values, function(index, value){
-
-            var newBin = $('<div class="ord-node-bin size-'+binNumber+' d'+index+'" data-index="'+index+'"><h1>'+value.label+'</h1><div class="ord-active-node-list"></div></div>');
-            newBin.data('index', index);
-            $('.ord-bin-container').append(newBin);
-            $('.d'+index).droppable({ accept: '.draggable',
-                drop: function(event, ui) {
-                    var dropped = ui.draggable;
-                    var droppedOn = $(this);
-
-                    if (ordinalBin.options.variable.values[index].value>0) {
-                        $('.followup').show();
-                        followup = $(dropped).data('node-id');
-                    }
-                    dropped.css({position:'inherit'});
-                    droppedOn.children('.ord-active-node-list').append(dropped);
-
-                    $(dropped).appendTo(droppedOn.children('.ord-active-node-list'));
-                    var properties = {};
-                    properties[ordinalBin.options.variable.label] = ordinalBin.options.variable.values[index].value;
-                    // Followup question
-
-                    // Add the attribute
-                    var edgeID = window.network.getEdges({from:window.network.getNodes({type_t0:'Ego'})[0].id,to:$(dropped).data('node-id'), type:ordinalBin.options.edgeType})[0].id;
-                    window.network.updateEdge(edgeID,properties);
-
-                    $.each($('.ord-node-bin'), function(oindex) {
-                        var length = $('.d'+oindex).children('.ord-active-node-list').children().length;
-                        if (length > 0) {
-                            var noun = 'people';
-                            if (length === 1) {
-                                noun = 'person';
-                            }
-
-                            $('.d'+oindex+' p').html(length+' '+noun+'.');
-                        } else {
-                            $('.d'+oindex+' p').html('(Empty)');
-                        }
-
-                    });
-
-                    var el = $('.d'+index);
-
-                    setTimeout(function(){
-                        el.transition({background:el.data('oldBg')}, 200, 'ease');
-                        // el.transition({ scale:1}, 200, 'ease');
-                    }, 0);
-
-                    ordinalBin.makeDraggable();
-                },
-                over: function() {
-                    $(this).data('oldBg', $(this).css('background-color'));
-                    $(this).stop().transition({background:'rgba(255, 193, 0, 1.0)'}, 400, 'ease');
-
-                },
-                out: function() {
-                    $(this).stop().transition({background:$(this).data('oldBg')}, 500, 'ease');
-                }
-            });
-
-        });
-
-        // get all edges
-        var edges = window.network.getEdges(ordinalBin.options.criteria);
-
-        // Add edges to bucket or to bins if they already have variable value.
-        $.each(edges, function(index,value) {
-            var dyadEdge = window.network.getNode(value.to);
-
-            if (value[ordinalBin.options.variable.label] !== undefined && value[ordinalBin.options.variable.label] !== '') {
-                index = 'error';
-                $.each(ordinalBin.options.variable.values, function(vindex, vvalue) {
-                    if (value[ordinalBin.options.variable.label] === vvalue.value) {
-                        index = vindex;
-                    }
-                });
-
-                if (ordinalBin.options.criteria.type !== 'Venue') {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.name+'</div>');
-                } else {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.name+'</div>');
-                }
-            } else {
-                if (ordinalBin.options.criteria.type !== 'Venue') {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.name+'</div>');
-                } else {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.name+'</div>');
-                }
-
-            }
-
-        });
-        ordinalBin.makeDraggable();
-
-        // Event Listeners
-        window.addEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).on('click', '.followup-option', followupHandler);
-    };
-
-    ordinalBin.makeDraggable = function() {
-        $('.draggable').draggable({
-            cursor: 'pointer',
-            revert: 'invalid',
-            appendTo: 'body',
-            scroll: false,
-            helper: 'clone',
-            start: function() {
-              
-                // if ($(this).css('top') !== 'auto' && $(this).css('top') !== '0px') {
-              
-                //     $(this).css({position:'absolute'});
-                // } else {
-              
-                //     $(this).css({position:'relative'});
-                // }
-
-                $(this).parent().css('overflow','inherit');
-                if (taskComprehended === false) {
-                    var eventProperties = {
-                        stage: window.netCanvas.Modules.session.currentStage(),
-                        timestamp: new Date()
-                    };
-                    log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-                    window.dispatchEvent(log);
-                    taskComprehended = true;
-                }
-
-                // $('.ord-node-bin').css({overflow:'hidden'});
-            },
-            stop: function() {
-                $(this).css({position:'inerit'});
-                $('.ord-node-bin').css({overflowY:'scroll'});
-            }
-        });
-    };
-
-return ordinalBin;
-
-};
-;/* global $, window */
-/* exported OrdinalBin */
-module.exports = function OrdinalBin() {
-    'use strict';
-    //global vars
-    var ordinalBin = {};
-    var taskComprehended = false;
-    var log;
-    ordinalBin.options = {
-        targetEl: $('.container'),
-        edgeType: 'Venue',
-        criteria: {},
-        variable: {
-            label:'gender_p_t0',
-            values: [
-                'Female',
-                'Male',
-                'Transgender',
-                'Don\'t Know',
-                'Won\'t Answer'
-            ]
-        },
-        heading: 'Default Heading',
-        subheading: 'Default Subheading.'
-    };
-    var followup;
-
-    var stageChangeHandler = function() {
-        ordinalBin.destroy();
-    };
-
-    var followupHandler = function() {
-        var followupVal = $(this).data('value');
-        var nodeid = followup;
-        var criteria = {
-            to:nodeid
-        };
-
-        window.tools.extend(criteria, ordinalBin.options.criteria);
-        var edge = window.network.getEdges(criteria)[0];
-
-        var followupProperties = {};
-
-        followupProperties[ordinalBin.options.followup.variable] = followupVal;
-
-        window.tools.extend(edge, followupProperties);
-        window.network.updateEdge(edge.id, edge);
-        $('.followup').hide();
-    };
-
-    ordinalBin.destroy = function() {
-        // Event Listeners
-        window.tools.notify('Destroying ordinalBin.',0);
-        window.removeEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).off('click', '.followup-option', followupHandler);
-
-    };
-
-    ordinalBin.init = function(options) {
-
-        window.tools.extend(ordinalBin.options, options);
-
-        ordinalBin.options.targetEl.append('<div class="node-question-container"></div>');
-
-        // Add header and subheader
-        $('.node-question-container').append('<h1>'+ordinalBin.options.heading+'</h1>');
-        $('.node-question-container').append('<p class="lead">'+ordinalBin.options.subheading+'</p>');
-
-        // Add node bucket
-        $('.node-question-container').append('<div class="node-bucket"></div>');
-        if(typeof ordinalBin.options.followup !== 'undefined') {
-            $('.node-question-container').append('<div class="followup"><h2>'+ordinalBin.options.followup.prompt+'</h2></div>');
-            $.each(ordinalBin.options.followup.values, function(index,value) {
-                $('.followup').append('<span class="btn btn-primary btn-block followup-option" data-value="'+value.value+'">'+value.label+'</span>');
-            });
-        }
-
-        // bin container
-        ordinalBin.options.targetEl.append('<div class="ord-bin-container"></div>');
-
-        // Calculate number of bins required
-        var binNumber = ordinalBin.options.variable.values.length;
-
-        // One of these for each bin. One bin for each variable value.
-        $.each(ordinalBin.options.variable.values, function(index, value){
-
-            var newBin = $('<div class="ord-node-bin size-'+binNumber+' d'+index+'" data-index="'+index+'"><h1>'+value.label+'</h1><div class="ord-active-node-list"></div></div>');
-            newBin.data('index', index);
-            $('.ord-bin-container').append(newBin);
-            $('.d'+index).droppable({ accept: '.draggable',
-                drop: function(event, ui) {
-                    var dropped = ui.draggable;
-                    var droppedOn = $(this);
-
-                    if (ordinalBin.options.variable.values[index].value>0) {
-                        $('.followup').show();
-                        followup = $(dropped).data('node-id');
-                    }
-                    dropped.css({position:'inherit'});
-                    droppedOn.children('.ord-active-node-list').append(dropped);
-
-                    $(dropped).appendTo(droppedOn.children('.ord-active-node-list'));
-                    var properties = {};
-                    properties[ordinalBin.options.variable.label] = ordinalBin.options.variable.values[index].value;
-                    // Followup question
-
-                    // Add the attribute
-                    var edgeID = window.network.getEdges({from:window.network.getNodes({type_t0:'Ego'})[0].id,to:$(dropped).data('node-id'), type:ordinalBin.options.edgeType})[0].id;
-                    window.network.updateEdge(edgeID,properties);
-
-                    $.each($('.ord-node-bin'), function(oindex) {
-                        var length = $('.d'+oindex).children('.ord-active-node-list').children().length;
-                        if (length > 0) {
-                            var noun = 'people';
-                            if (length === 1) {
-                                noun = 'person';
-                            }
-
-                            $('.d'+oindex+' p').html(length+' '+noun+'.');
-                        } else {
-                            $('.d'+oindex+' p').html('(Empty)');
-                        }
-
-                    });
-
-                    var el = $('.d'+index);
-
-                    setTimeout(function(){
-                        el.transition({background:el.data('oldBg')}, 200, 'ease');
-                        // el.transition({ scale:1}, 200, 'ease');
-                    }, 0);
-
-                    ordinalBin.makeDraggable();
-                },
-                over: function() {
-                    $(this).data('oldBg', $(this).css('background-color'));
-                    $(this).stop().transition({background:'rgba(255, 193, 0, 1.0)'}, 400, 'ease');
-
-                },
-                out: function() {
-                    $(this).stop().transition({background:$(this).data('oldBg')}, 500, 'ease');
-                }
-            });
-
-        });
-
-        // get all edges
-        var edges = window.network.getEdges(ordinalBin.options.criteria);
-
-        // Add edges to bucket or to bins if they already have variable value.
-        $.each(edges, function(index,value) {
-            var dyadEdge;
-            if (ordinalBin.options.criteria.type !== 'Venue') {
-                dyadEdge = window.network.getEdges({from: value.from, to:value.to, type:'Venue'})[0];
-            }
-
-            if (value[ordinalBin.options.variable.label] !== undefined && value[ordinalBin.options.variable.label] !== '') {
-                index = 'error';
-                $.each(ordinalBin.options.variable.values, function(vindex, vvalue) {
-                    if (value[ordinalBin.options.variable.label] === vvalue.value) {
-                        index = vindex;
-                    }
-                });
-
-                if (ordinalBin.options.criteria.type !== 'Venue') {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.venue_name_t0+'</div>');
-                } else {
-                    $('.d'+index).children('.ord-active-node-list').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.venue_name_t0+'</div>');
-                }
-            } else {
-                if (ordinalBin.options.criteria.type !== 'Venue') {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+dyadEdge.venue_name_t0+'</div>');
-                } else {
-                    $('.node-bucket').append('<div class="node-bucket-item draggable" data-node-id="'+value.to+'">'+value.venue_name_t0+'</div>');
-                }
-
-            }
-
-        });
-        ordinalBin.makeDraggable();
-
-        // Event Listeners
-        window.addEventListener('changeStageStart', stageChangeHandler, false);
-        $(window.document).on('click', '.followup-option', followupHandler);
-    };
-
-    ordinalBin.makeDraggable = function() {
-        $('.draggable').draggable({
-            cursor: 'pointer',
-            revert: 'invalid',
-            appendTo: 'body',
-            scroll: false,
-            helper: 'clone',
-            start: function() {
-              
-                // if ($(this).css('top') !== 'auto' && $(this).css('top') !== '0px') {
-              
-                //     $(this).css({position:'absolute'});
-                // } else {
-              
-                //     $(this).css({position:'relative'});
-                // }
-
-                $(this).parent().css('overflow','inherit');
-                if (taskComprehended === false) {
-                    var eventProperties = {
-                        stage: window.netCanvas.Modules.session.currentStage(),
-                        timestamp: new Date()
-                    };
-                    log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-                    window.dispatchEvent(log);
-                    taskComprehended = true;
-                }
-
-                // $('.ord-node-bin').css({overflow:'hidden'});
-            },
-            stop: function() {
-                $(this).css({position:'inerit'});
-                $('.ord-node-bin').css({overflowY:'scroll'});
-            }
-        });
-    };
-
-return ordinalBin;
 
 };
 ;/* global $, window */
@@ -8106,6 +6789,8 @@ module.exports = new Session();
 /* exported Sociogram */
 /*jshint bitwise: false*/
 
+
+
 // Can be replaced with npm module once v0.9.5 reaches upstream.
 module.exports = function Sociogram() {
 	'use strict';
@@ -8155,8 +6840,8 @@ module.exports = function Sociogram() {
 
 	// Adjusts the size of text so that it will always fit inside a given shape.
 	function padText(text, container, amount){
-		while ((text.width() * 1.1)<container.width()-(amount*2)) {
-			text.fontSize(text.fontSize() * 1.1);
+		while ((text.width() * 1.1)<(container.width()-(amount*2))) {
+			text.fontSize(text.fontSize() * 0.5);
 			text.y((container.height() - text.height())/2);
 		}
 		text.setX( container.getX() - text.getWidth()/2 );
@@ -8352,7 +7037,7 @@ module.exports = function Sociogram() {
 			id: nodeID,
 			label: 'Undefined',
 			size: sociogram.settings.defaultNodeSize,
-			color: 'rgb(0,0,0)',
+			color: 'rgb(255,255,255)',
 			strokeWidth: 4,
 			draggable: dragStatus,
 			dragDistance: 20
@@ -8416,9 +7101,11 @@ module.exports = function Sociogram() {
 
 		var nodeLabel = new Konva.Text({
 			text: nodeOptions.label,
+			// width: nodeOptions.size*2
 			// fontSize: 20,
 			fontFamily: 'Lato',
-			fill: 'white',
+			fill: 'black',
+			wrap: 'word',
 			align: 'center',
 			// offsetX: (nodeOptions.size*-1)-10, //left right
 			// offsetY:(nodeOptions.size*1)-10, //up down
@@ -8562,9 +7249,6 @@ module.exports = function Sociogram() {
 						type: sociogram.settings.edgeType
 					};
 
-					edgeProperties[sociogram.settings.variables[0]] = 'perceived';
-
-
 					if (sociogram.settings.network.edgeExists(edgeProperties) === true) {
 						note.debug('Sociogram removing edge.');
 						sociogram.settings.network.removeEdge(sociogram.settings.network.getEdges(edgeProperties));
@@ -8626,7 +7310,7 @@ module.exports = function Sociogram() {
 
 		});
 
-		padText(nodeLabel,nodeShape,10);
+		padText(nodeLabel,nodeShape,30);
 
 		nodeGroup.add(nodeShape);
 		nodeGroup.add(nodeLabel);
@@ -8755,6 +7439,7 @@ module.exports = function Sociogram() {
 	// Main initialisation functions
 
 	sociogram.initKinetic = function () {
+		Konva.pixelRatio=2;
 		// Initialise KineticJS stage
 		stage = new Konva.Stage({
 			container: 'kineticCanvas',

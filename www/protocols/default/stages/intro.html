@@ -1,72 +1,48 @@
 <div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="row study-welcome">
-				<div class="col-md-12">
-					<h1 class='text-center'>Welcome to the example study.</h1>
-				</div>
-			</div>
-		  	<form role="form" id="step1">
-				<div class="row welcome-row">
-			  		<div class="col-md-12 form-group">
-			  			<label for="ego_name">Participant Name:</label>
-					  	<input type="text" class="form-control ego_name" id="ego_name" required>
-					</div>
-				<div class="row welcome-row-submit">
-	                <div class="col-md-12 form-group">
-					  	<button type="submit" class="btn btn-primary submit-1">Continue</button>
-					</div>
-				</div>
-			</form>
+	<div class="col-md-6 study-welcome">
+		<h1 class='text-center'>Introduction</h1>
+		<p class="lead">This demonstration shows some of the features of Network Canvas. The demonstration is based on the 2004 General Social Survey</p>
+		<p>We have made some slight changes to these questions. If you are interested, contact us to see the differences and a discussion of these.
+		<div class="small">
+			<h3>Please note:</h3>
+			<p>Data from this demonstration will be stored locally and will appear next time you open Network Canvas unless you explicitly reset session. Data is never uploaded to a third party. This is done by clicking [GEAR ICON] and selecting [RESET SESSION].</p>
+		</div>
+		<p>To begin, click continue.</p>
+	</div>
+  <div class="col-md-6 welcome-row-submit">
+		<div class="form-group">
+		  <button type="submit" class="btn btn-primary submit-1">Continue</button>
 		</div>
 	</div>
 </div>
 <script>
 	var idSet = false, changed = false;
 
-	$('input').on('change paste keyup', function() {
-		if (idSet !== false && $('.radarID').val() !== idSet) {
-			changed = true;
-		}
-	})
+	if (typeof window.network.getNode(0).radar_id !== 'undefined') {
+		idSet = window.network.getNode(0).radar_id;
+	}
 
-	// Focus on the first field.
-	$('.ego_name').focus();
-
-	// Populate existing data if it exists
-	var readable = new Date(window.netCanvas.Modules.session.returnData('session').int_stime);
-
-
-	$('.ego_name').val(window.network.getNode(0).ego_name);
+	// Disable navigation to a random stage if we are at visit > 1 and we don't have a previous network, or if we are a fresh session.
+	if (!window.network.getEgo()) {
+		window.netCanvas.Modules.session.disableNavigation();
+	}
 
 	function processData() {
 		// check if ego node already exists
 		if (window.network.getEgo() === false) {
 		  // if not, create a new root node
 			window.network.createEgo({
-			  label:'Root',
-			  ego_name: $('.ego_name').val()
+			  label:'Root'
 			});
-
-		} else {
-
-		  // update an existing node
-		  var ego = window.network.getEgo();
-		  window.network.updateNode(ego.id,{
-			  label:'Root',
-			  ego_name: $('.ego_name').val()
-		  });
 
 		}
 
-		  window.netCanvas.Modules.session.nextStage();
+	  // Continue to next stage
+	  window.netCanvas.Modules.session.enableNavigation();
+	  window.netCanvas.Modules.session.nextStage();
 	}
 
-	$('#step1 :input').on('change input', function() {
-    	$('.submit-1').text('Save Changes');
-	});
-
-	$("#step1").submit(function( event ) {
+	$(".submit-1").click(function( event ) {
 		// Prevent the form actually submitting. We're going to process the data manually.
 		event.preventDefault();
 		processData();

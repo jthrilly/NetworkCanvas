@@ -53702,10 +53702,10 @@ module.exports=window.L=require("leaflet/dist/leaflet-src");
   }
 
   if (typeof define === 'function' && define.amd) {
-    define(['jquery'], function() {
+    define([], function() {
       return Odometer;
     });
-  } else if (typeof exports === !'undefined') {
+  } else if (typeof exports !== "undefined" && exports !== null) {
     module.exports = Odometer;
   } else {
     window.Odometer = Odometer;

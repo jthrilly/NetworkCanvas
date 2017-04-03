@@ -15,7 +15,7 @@ $(document).ready(function() {
     var moment = require('moment');
     window.moment = moment; // needed for module access.
     window.netCanvas.devMode = false;
-    window.netCanvas.studyProtocol = 'radar-protocol';
+    window.netCanvas.studyProtocol = 'default';
 
     //Is this Node.js?
     if(window.isNode) {
@@ -160,21 +160,10 @@ $(document).ready(function() {
     window.netCanvas.Modules.AppGenerator = require('./appgenerator.js');
     window.netCanvas.Modules.DateInterface = require('./dateinterface.js');
     window.netCanvas.Modules.OrdBin = require('./ordinalbin.js');
-    window.netCanvas.Modules.OrdBinVenue = require('./ordinalbin_venue.js');
-    window.netCanvas.Modules.OrdBinApp = require('./ordinalbin_app.js');
-    window.netCanvas.Modules.OrdBinService = require('./ordinalbin_service.js');
     window.netCanvas.Modules.IOInterface = require('./iointerface.js');
     window.netCanvas.Modules.MapPeople = require('./map_people.js');
-    window.netCanvas.Modules.MapParty = require('./map_party.js');
-    window.netCanvas.Modules.MapServices = require('./map_services.js');
-    window.netCanvas.Modules.RoleRevisit = require('./rolerevisit.js');
     window.netCanvas.Modules.ListSelect = require('./listselect.js');
-    window.netCanvas.Modules.ListSelectVenue = require('./listselect_venue.js');
-    window.netCanvas.Modules.ListSelectServices = require('./listselect_services.js');
     window.netCanvas.Modules.MultiBin = require('./multibin.js');
-    window.netCanvas.Modules.MultiBinVenue = require('./multibin_venue.js');
-    window.netCanvas.Modules.MultiBinApp = require('./multibin_app.js');
-    window.netCanvas.Modules.MultiBinService = require('./multibin_service.js');
     window.netCanvas.Modules.Sociogram = require('./sociogram.js');
 
     // Initialise the menu system – other modules depend on it being there.

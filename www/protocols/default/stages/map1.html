@@ -1,0 +1,19 @@
+<div id="map"></div>
+
+<script>
+
+var map = new window.netCanvas.Modules.MapPeople();
+map.init({
+    targetEl: $('#map'),
+    criteria: {
+        type:'Dyad',
+        from: window.network.getEgo().id
+    },
+    geojson: window.protocolPath+'data/countries.json',
+    prompt: 'Tap on the map to indicate the country where <strong>%alter%</strong> lives.',
+    variable: {
+        value: 'res_location_p_t0'
+    }
+});
+
+</script>

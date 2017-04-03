@@ -111,7 +111,6 @@ module.exports = function MultiBin() {
 
 	};
 
-
 	var nodeClickHandler = function(e) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -263,27 +262,28 @@ module.exports = function MultiBin() {
 		// bin container
         multiBin.options.targetEl.append('<div class="node-bin-container"></div>');
 
-
-		var containerWidth = $('.node-bin-container').outerWidth();
-		var containerHeight = $('.node-bin-container').outerHeight();
+		var containerWidth = $('.node-bin-container').innerWidth()-40;
+		var containerHeight = $('.node-bin-container').innerHeight()-40;
 		var number = multiBin.options.variable.values.length;
-		var rowThresh = number > 4 ? Math.floor(number*0.66) : 4;
+		var rowThresh = number > 3 ? Math.floor(number*0.66) : 4;
 		var itemSize = 0;
 		var rows = Math.ceil(number/rowThresh);
+		console.log('width: ', containerWidth);
+		console.log('height: ', containerHeight);
+		itemSize = number >= rowThresh ? containerWidth/rowThresh : containerWidth/number;
+		console.log('dual mode');
 
-		if (containerWidth >= containerHeight) {
-			itemSize = number >= rowThresh ? containerWidth/rowThresh : containerWidth/number;
+		console.log('row thresh: ', rowThresh);
 
-			while(itemSize > (containerHeight/rows)) {
-				itemSize = itemSize*0.99;
-			}
+		console.log('Item size: ', itemSize);
+		console.log('containerheight/rows: ', (containerHeight/rows));
+		console.log('(containerWidth/rowThresh): ', (containerWidth/rowThresh));
 
-		} else {
-			itemSize = number >= rowThresh ? containerHeight/rowThresh : containerHeight/number;
-
-			while(itemSize > containerWidth) {
-				itemSize = itemSize*0.99;
-			}
+		while(itemSize > (containerHeight/rows) || itemSize > (containerWidth/rowThresh)) {
+			console.log('Item size: ', itemSize);
+			console.log('containerheight/rows: ', (containerHeight/rows));
+			console.log('(containerWidth/rowThresh): ', (containerWidth/rowThresh));
+			itemSize = itemSize*0.95;
 		}
 
 		// get all edges

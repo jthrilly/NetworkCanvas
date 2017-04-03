@@ -1,0 +1,18 @@
+<div id="kineticCanvas"></div>
+<script>
+var criteria = {
+    type:'Dyad',
+    from:window.network.getNodes({type_t0:'Ego'})[0].id
+};
+
+var sociogram = new window.netCanvas.Modules.Sociogram();
+sociogram.init({
+    network: window.network,
+    mode:'Position', //edge, position, select
+    targetEl: $('.container'),
+    variables: ['coords_t0'],
+    criteria: criteria,
+    heading: "Please arrange the people on the screen. You can arrange them anywhere, but it is easiest to place people who know each other near each other. Leave lots of room between people.",
+    subheading:''
+});
+</script>

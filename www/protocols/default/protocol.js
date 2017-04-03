@@ -1,44 +1,22 @@
+/* jshint strict: false, quotmark: double */
+/* global window, $ */
 /* exported protocol */
-/* global window */
 var protocol = {
     sessionParameters: {
-        name: 'Default' // The only currently implemented patameter
-    },
-    skipFunctions: {
-        /*
-
-        Skip functions can evaluate any of the existing interview data to determine if a given stage
-        should be shown.
-
-        If a skip function is defined for a given stage, it is evaluated before the stage is initialised.
-
-        If a stage is to be skipped, the skip function should return true. It should always return false
-        in all other cases.
-
-        */
-
-        exampleSkip: function() {
-            /*
-            Session data is available here under the global namespace window.netCanvas.Modules.session.sessionData
-            Network data can be accessed at window.network
-            */
-
-            return false;
-        }
+        name: "Sunbelt 2017"
     },
     stages: [
-        {
-            icon: 'fa-bullseye', // This can be anything from FontAwesome (http://fontawesome.io/)
-            label:'Introduction', // The label that is visible in the main menu
-            page:'intro.html', // The html file in the 'stages' folder that contains this stage
-            skip: function() { return window.netCanvas.Modules.session.skipFunctions.exampleSkip();} // An example skip function. See above for details.
-        },
-        {icon: 'fa-bullseye', label:'Name Generator', page:'namegen.html' },
-        {icon: 'fa-bullseye', label:'Layout', page:'layout.html'},
-        {icon: 'fa-bullseye', label:'Edge Creation', page:'edges.html'},
-        {icon: 'fa-bullseye', label:'Multibin', page:'multibin.html'},
-        {icon: 'fa-bullseye', label:'Ordinal Bin', page:'ordbin.html'},
-        {icon: 'fa-bullseye', label:'List Select', page:'listselect.html'},
-        {icon: 'fa-bullseye', label:'Finish', page:'finish.html'}
+        {icon:"fa-file-text", label:"Introduction", page:"intro.html"},
+        {icon:"fa-file-text", label:"Affiliations", page:"listselect.html"},
+        {icon:"fa-user-plus", label:"NG: Important", page:"namegen1.html"},
+        {icon:"fa-connectdevelop", label:"NET: layout", page:"canvaslayout.html"},
+        {icon:"fa-connectdevelop", label:"Edge Linking Into", page:"edge-intro.html"},
+        {icon:"fa-connectdevelop", label:"NET EDGE: social", page:"canvasedge1.html"},
+        {icon:"fa-sort", label:"ORD: contact frequency", page:"ordbin1a.html"},
+        {icon:"fa-map-marker", label:"MAP: location", page:"map1.html"},
+        {icon:"fa-sort", label:"ORD: Education", page:"ordbin1.html"},
+        {icon:"fa-cubes", label:"CAT: gender", page:"multibin5.html"},
+        {icon:"fa-cloud-download", label:"Download Data", page:"download.html"},
+        {icon:"fa-check", label:"Finish", page:"finish.html"}
     ]
 };
