@@ -436,7 +436,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('createPlistFile', 'set node webkit and app relevant information to a new plist file', function() {
-        var metadata = grunt.file.readJSON('.yo-rc.json');
+        var metadata = {"nodeWebkitVersion": "v0.12.2"};
         var resourcesPath = config.resources;
         var nwExecuteable = 'nwjs';
         if (metadata.nodeWebkitVersion.indexOf('v0.8.') === 0 || metadata.nodeWebkitVersion.indexOf('v0.9.') === 0 || metadata.nodeWebkitVersion.indexOf('v0.10.') === 0 || metadata.nodeWebkitVersion.indexOf('v0.11.') === 0) {
@@ -448,7 +448,8 @@ module.exports = function (grunt) {
         var infoPlist = grunt.template.process(infoPlistTmp, {
             data: {
                 nwExecutableName: nwExecuteable
-            }
+            },
+            version: '2.0.0'
         });
         grunt.file.write(resourcesPath + '/mac/Info.plist', infoPlist, {
             encoding: 'UTF8'

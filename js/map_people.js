@@ -39,8 +39,9 @@ module.exports = function GeoInterface() {
   	// Private functions
 
     function highlightFeature(e) {
+      console.log('highlight feature');
         var layer = e.target;
-        leaflet.fitBounds(e.target.getBounds(), {maxZoom:6});
+        leaflet.fitBounds(e.target.getBounds());
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -56,7 +57,7 @@ module.exports = function GeoInterface() {
 
     function selectFeature(e) {
         var layer = e;
-        leaflet.fitBounds(e.getBounds(), {maxZoom:4});
+        leaflet.fitBounds(e.getBounds());
 
         layer.setStyle({
             fillOpacity: 0.8,
@@ -131,9 +132,9 @@ module.exports = function GeoInterface() {
 
             $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+layer.feature.properties.name);
         } else {
-            // Map node already selected. Have we clicked the same one again?
+            console.log('Map node already selected. Have we clicked the same one again?');
             if (layer.feature.properties.name === mapNodeClicked) {
-                // Same map node clicked. Reset the styles and mark no node as being selected
+                console.log('Same map node clicked. Reset the styles and mark no node as being selected');
                 resetHighlight(e);
                 mapNodeClicked = false;
                 properties = {};
@@ -150,6 +151,7 @@ module.exports = function GeoInterface() {
             } else {
                 resetAllHighlights();
                 highlightFeature(e);
+                $('.map-node-location').html('<strong>Currently marked as:</strong> <br>'+layer.feature.properties.name);
                 properties = {};
                 properties[geoInterface.options.variable.value] = layer.feature.properties.name;
 
@@ -284,13 +286,20 @@ module.exports = function GeoInterface() {
 
   	geoInterface.init = function(options) {
         window.tools.extend(geoInterface.options, options);
+        var southWest = L.latLng(-89.98155760646617, -180),
+        northEast = L.latLng(89.99346179538875, 180);
+        var bounds = L.latLngBounds(southWest, northEast);
 
   		// Initialize the map, point it at the #map element and center it on Chicago
         leaflet = window.L.map('map', {
             // maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
             zoomControl: false,
-            center: [31.505, -0.09],
-            zoom:3
+            center: bounds.getCenter(),
+            minZoom: 4,
+            maxZoom: 6,
+            noWrap: true,
+            maxBounds: bounds,
+            maxBoundsViscosity: 1.0
         });
 
         window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -334,6 +343,9 @@ module.exports = function GeoInterface() {
           	}
         });
 
+        console.log(bounds, bounds.getCenter());
+        // leaflet.setView(bounds.getCenter());
+        leaflet.locate({setView: true});
         geoInterface.drawUIComponents();
 
         // Events

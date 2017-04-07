@@ -8,10 +8,10 @@
 	<string>netCanvas</string>
 	<key>CFBundleExecutable</key>
 	<string><%= nwExecutableName %></string>
-	
+
 	<key>CFBundleGetInfoString</key>
 	<string>© Joshua Melville, 2013</string>
-	
+
 	<key>CFBundleIconFile</key>
 	<string>nw.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -23,9 +23,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string><%= version %></string>
+	<string>2.0.0</string>
 	<key>CFBundleVersion</key>
-	<string><%= version %></string>
+	<string>2.0.0</string>
 	<key>LSFileQuarantineEnabled</key>
 	<true/>
 	<key>LSMinimumSystemVersion</key>

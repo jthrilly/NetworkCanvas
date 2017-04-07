@@ -15,12 +15,12 @@
 @font-size-large:         ceil((@font-size-base * 2.05)); // ~18px
 @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
-@font-size-h1:            floor((@font-size-base * 2.2)); // ~36px
-@font-size-h2:            floor((@font-size-base * 2.0)); // ~30px
-@font-size-h3:            ceil((@font-size-base * 1.8)); // ~24px
-@font-size-h4:            ceil((@font-size-base * 1.5)); // ~18px
-@font-size-h5:            @font-size-base;
-@font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+@font-size-h1:            auto;
+@font-size-h2:            auto;
+@font-size-h3:            auto;
+@font-size-h4:            auto;
+@font-size-h5:            auto;
+@font-size-h6:            auto;
 
 //** Unit-less `line-height` for use in components like buttons.
 @line-height-base:        20/14; // 20/14
@@ -582,7 +582,7 @@
 //
 //## Define alert colors, border radius, and padding.
 
-@alert-padding:               15px;
+@alert-padding:               1em;
 @alert-border-radius:         @border-radius-base;
 @alert-link-font-weight:      bold;
 

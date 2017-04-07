@@ -51,6 +51,16 @@ module.exports = function Namegenerator() {
 
     };
 
+    var groupClickHandler = function() {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+
+        } else {
+            $(this).addClass('selected');
+        }
+
+    };
+
     var roleClickHandler = function() {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
@@ -98,6 +108,15 @@ module.exports = function Namegenerator() {
 
         // Get the dyad edge for this node
         var edge = window.network.getEdges({from:window.network.getNodes({type_t0:'Ego'})[0].id, to: index, type:'Dyad'})[0];
+
+        // Update ego groups
+        if (edge.egoGroups) {
+          $.each(edge.egoGroups, function(groupIndex, group) {
+            console.log(group);
+              $('div.ego-group:contains("'+group+'")').addClass('selected');
+          });
+        }
+
 
         // Set the value of editing to the node id of the current person
         editing = index;
@@ -226,8 +245,20 @@ module.exports = function Namegenerator() {
                 window.network.addEdge(edgeProperties);
             });
 
-            note.info('// Main edge');
+
+            note.info('// Add ego groups');
+
+            note.info('// Iterate through selected items and create a new role edge for each.');
+            var egoGroups = [];
+            $.each($('.newNodeBox').find('.ego-group.selected'), function() {
+              egoGroups.push($(this).text());
+            });
+
             var edge = window.network.getEdges({to:newNode, type:'Dyad'})[0];
+            edge.egoGroups = egoGroups;
+            window.network.updateEdge(edge.id, edge);
+
+            note.info('// Main edge');
             namegenerator.addToList(edge);
             alterCount++;
             alterCounter.update(alterCount);
@@ -270,6 +301,15 @@ module.exports = function Namegenerator() {
 
             window.network.updateNode(nodeID, newNodeProperties);
             var properties = window.tools.extend(newEdgeProperties,newNodeProperties);
+
+            var egoGroups = [];
+            $.each($('.newNodeBox').find('.ego-group.selected'), function() {
+              egoGroups.push($(this).text());
+            });
+
+            var edge = window.network.getEdges({to:editing, type:'Dyad'})[0];
+            edge.egoGroups = egoGroups;
+            window.network.updateEdge(edge.id, edge);
 
             // update relationship roles
 
@@ -380,6 +420,7 @@ module.exports = function Namegenerator() {
         editing = false;
         $('.relationship-button').html('Set Relationship Roles');
         $(relationshipPanel).find('.relationship').removeClass('selected');
+        $('.ego-group').removeClass('selected');
     };
 
     namegenerator.destroy = function() {
@@ -455,6 +496,49 @@ module.exports = function Namegenerator() {
         });
 
         $('.newNodeBox .form .fields').append('<div class="form-group"><div class=""><button type="button" class="btn btn-primary btn-block relationship-button">Set Relationship Roles</div></div></div>');
+
+        // Sunbelt hax
+
+        // Ego group membership
+        var ego = window.network.getEgo();
+        var egoGroups = [];
+        var groups = [
+                      {label: "Fraternal Groups", value: 'group_1'},
+                      {label: "Service clubs", value: 'group_2'},
+                      {label: "Veterans' Groups", value: 'group_3'},
+                      {label: "Political Clubs", value: 'group_4'},
+                      {label: "Labor Unions", value: 'group_5'},
+                      {label: "Sports Groups", value: 'group_6'},
+                      {label: "Youth Groups", value: 'group_7'},
+                      {label: "School Services Groups", value: 'group_8'},
+                      {label: "Hobby or Garden Clubs", value: 'group_9'},
+                      {label: "School Fraternities or Sororities", value: 'group_10'},
+                      {label: "Nationality Groups", value: 'group_11'},
+                      {label: "Farm Organizations", value: 'group_12'},
+                      {label: "Literary, Art, Discussion, or Study Groups", value: 'group_13'},
+                      {label: "Church Affiliated Groups", value: 'group_14'},
+                      {label: "Any Other Group", value: 'group_15'}
+                  ];
+
+        var groupEl = $('<div class="row"><h6 class="text-center">Which groups does this person belong to?</h6><div class="ego-group-row"></div></div>');
+        var groupsExist = false;
+        $.each(groups, function(groupIndex, group) {
+          console.log(group);
+          if (ego[group.value] === 1) {
+            groupsExist = true;
+            groupEl.find('.ego-group-row').append('<div class="ego-group">'+group.label+'</div>');
+          }
+        });
+
+        if (groupsExist) {
+            $('.newNodeBox .form .fields').append(groupEl);
+        }
+
+
+
+
+
+
         var buttons = $('<div class="row"><div class="col-sm-4"><button type="submit" class="btn btn-success btn-block submit-1"><span class="glyphicon glyphicon-plus-sign"></span> Add</button></div><div class="col-sm-4"><button type="button" class="btn btn-danger btn-block delete-button"><span class="glyphicon glyphicon-trash"></span> Delete</button></div><div class="col-sm-4"><span class="btn btn-warning btn-block cancel">Cancel</span></div></div>');
         $('.newNodeBox .form .fields').append(buttons);
 
@@ -494,6 +578,7 @@ module.exports = function Namegenerator() {
         $(window.document).on('submit', '#ngForm', submitFormHandler);
         $(window.document).on('click', '.relationship', roleClickHandler);
         $(window.document).on('click', '.relationship-button', namegenerator.toggleRelationshipBox);
+        $(window.document).on('click', '.ego-group', groupClickHandler);
         $(window.document).on('click', '.relationship-close-button', namegenerator.toggleRelationshipBox);
 
         // Set node count box
