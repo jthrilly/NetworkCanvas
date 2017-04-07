@@ -1,0 +1,89 @@
+<div id="kineticCanvas"></div>
+
+<script>
+
+var sociogram = new window.netCanvas.Modules.SociogramNarrative();
+var properties = {
+    presets: [
+        {
+            name: 'Education',
+            edges: [
+                {
+                    types:['professional'],
+                    keyLabel: 'Professional tie',
+                    stroke: '#1ECD97'
+                }
+            ],
+            selected: [
+                {
+                    variables: ['education_t0'],
+                    label: 'Education level',
+                    color: '#1ECD97'
+                }
+            ],
+            size: ['ord_disempowering', 'ord_negative', 'ord_stress']
+        },
+        {
+            name: 'Contact',
+            edges: [
+                {
+                    types:['social'],
+                    keyLabel: 'Social tie',
+                    stroke: '#01a6c7'
+                },
+                {
+                    types:['professional'],
+                    keyLabel: 'Professional tie',
+                    stroke: '#1ECD97'
+                }
+            ],
+            selected: [
+                {
+                    variables: ['comm_t0'],
+                    label: 'Contact freq.',
+                    color: '#01a6c7'
+                }
+            ],
+            size: ['comm_t0']
+        }
+    ],
+    selectVariables: [],
+    edgeTypes: [],
+    sizeVariables: [],
+    targetEl: 'kineticCanvas',
+    modes:['Position'],
+    panels: ['mode', 'details'],
+    options: {
+        concentricCircleNumber: 1,
+        concentricCircleSkew: true
+    },
+    dataOrigin: {
+        'Position': {
+            type: 'edge',
+            variable: 'coords'
+        },
+        'Community' : {
+            type: 'ego',
+            name: 'Groups',
+            egoVariable: 'contexts',
+            variable: 'contexts'
+        }
+    },
+    prompts: [
+        {
+            dataType: 'edge', // namegenerator/Edge/select
+            showEdges: false,
+            showSelected: false,
+
+            prompt: 'Narrative'
+        }
+    ],
+    criteria: { // criteria for being shown on this screen
+        includeEgo: false,
+        query: {
+        }
+    }
+};
+sociogram.init(properties);
+
+</script>
