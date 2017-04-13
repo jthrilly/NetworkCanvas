@@ -6467,7 +6467,7 @@ var Session = function Session() {
         var eleData = ele;
         for (var key in eleData) {
           console.log('node key: ',key, eleData[key]);
-          if (eleData[key].length > 0 && key !== 'id' && key !=='coords') {
+          if (key !== 'id' && key !=='coords') {
               $('<data />', node).attr({key: key}).text(eleData[key]).appendTo(node);
           }
         }
