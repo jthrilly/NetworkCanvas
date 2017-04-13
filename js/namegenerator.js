@@ -434,6 +434,7 @@ module.exports = function Namegenerator() {
         $(window.document).off('click', '.inner-card', cardClickHandler);
         $(window.document).off('submit', '#ngForm', submitFormHandler);
         $(window.document).off('click', '.relationship', roleClickHandler);
+        $(window.document).off('click', '.ego-group', groupClickHandler);
         $(window.document).off('click', '.relationship-button', namegenerator.toggleRelationshipBox);
         $(window.document).off('click', '.relationship-close-button', namegenerator.toggleRelationshipBox);
         window.removeEventListener('changeStageStart', stageChangeHandler, false);

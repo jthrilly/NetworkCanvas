@@ -294,7 +294,7 @@ module.exports = function GeoInterface() {
         leaflet = window.L.map('map', {
             // maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
             zoomControl: false,
-            center: bounds.getCenter(),
+            center: [31.59, 120.29],
             minZoom: 4,
             maxZoom: 6,
             noWrap: true,
@@ -307,7 +307,8 @@ module.exports = function GeoInterface() {
             mapID: 'newest',
             app_id: 'FxdAZ7O0Wh568CHyJWKV',
             app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
-            base: 'base'
+            base: 'base',
+            center: [31.59, 120.29]
         }, { noWrap: true}).addTo(leaflet);
 
 
@@ -343,9 +344,8 @@ module.exports = function GeoInterface() {
           	}
         });
 
-        console.log(bounds, bounds.getCenter());
-        // leaflet.setView(bounds.getCenter());
-        leaflet.locate({setView: true});
+        leaflet.setView([41.798395426119534,-87.839671372338884], 4);
+
         geoInterface.drawUIComponents();
 
         // Events

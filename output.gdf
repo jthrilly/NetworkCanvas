@@ -1,0 +1,12 @@
+nodedef>name,y int,x int,to VARCHAR(120), name_t0 VARCHAR(120), nname_t0 VARCHAR(120), age_p_t0 VARCHAR(120), ng_t0 VARCHAR(120), egoGroups VARCHAR(120), label VARCHAR(120)
+n1,593,128,1,Ethelene Alethia,Ethelene A.,26,closest,,Ethelene A.,
+n2,1032,418,2,Celestina Lisbeth,Celestina.,67,closest,,Celestina.,
+3,Eliana Barney,Eliana Bar.,51,closest,Labor Unions,Youth Groups,School Services Groups,School Fraternities or Sororities,Eliana Bar.,
+4,Renee Kieth,Renee Kiet.,27,closest,Labor Unions,Youth Groups,Renee Kiet.,
+5,Lloyd Edra,Lloyd Edra.,28,closest,,Lloyd Edra.,
+6,Raymundo Alethia,Raymundo A.,80,closest,Labor Unions,Youth Groups,School Fraternities or Sororities,Raymundo A.,
+7,Tammera Tonette,Tammera To.,27,closest,,Tammera To.,
+8,Madelene Tiera,Madelene T.,76,closest,,Madelene T.,
+9,Manda Pamella,Manda Pame.,41,closest,,Manda Pame.,
+10,Veola Marcie,Veola Marc.,25,closest,,Veola Marc.,
+edgedef>node1,node2

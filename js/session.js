@@ -13,9 +13,156 @@ var Session = function Session() {
     session.sessionData = {};
     var lastSaveTime, saveTimer;
 
+    session.createGraphML = function(data) {
+      console.log('session.createGraphML() ', data);
+      function normalizeGraph(network) {
+        var tempNetwork = new netCanvas.Modules.Network;
+        tempNetwork.loadNetwork({nodes:network.nodes,edges:network.edges});
+
+        var dyadEdges = tempNetwork.getEdges({type:'Dyad'});
+        dyadEdges.forEach(function(edge) {
+          var newEdge = $.extend({},edge);
+          delete newEdge.id;
+          delete newEdge.from;
+          delete newEdge.to;
+          delete newEdge.type;
+          tempNetwork.updateNode(edge.to, newEdge, function() {
+            tempNetwork.removeEdge(edge);
+          });
+        });
+
+        // Delete ego
+        tempNetwork.removeNode(tempNetwork.getEgo().id);
+
+        return {nodes: tempNetwork.nodes, edges: tempNetwork.edges};
+      };
+
+      function nodeAttributes(node) {
+
+        var nodeAttributes = {};
+        nodeAttributes.label = node.nname_t0;
+        nodeAttributes.x = node.coords[0] || null;
+        nodeAttributes.y = node.coords[1] || null;
+
+
+
+        return nodeAttributes;
+      }
+
+      function xmlToString(xmlData) {
+
+        var xmlString;
+        //IE
+        if (window.ActiveXObject) {
+          xmlString = xmlData.xml;
+        }
+        // code for Mozilla, Firefox, Opera, etc.
+        else {
+          xmlString = (new XMLSerializer()).serializeToString(xmlData);
+        }
+        return xmlString;
+      }
+
+      var xmlDoc = $.parseXML(
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"\n' +
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' +
+        'xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns\n' +
+        'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n' +
+        '  <graph edgedefault="undirected">\n' +
+        ' </graph>\n' +
+        ' </graphml>\n'
+      );
+      var $xml = $(xmlDoc);
+
+      var $graph = $xml.find("graph");
+      var $graphML = $xml.find("graphml");
+
+      function generateKeys(data) {
+        var done = [];
+        data.nodes.forEach(function(node) {
+
+          for (var key in node) {
+            // var test = $xml.find("key['attr.name'='"+key+"']");
+            if (done.indexOf(key) === -1 && key !=='coords' && key !== 'id') {
+                $('<key />', $graphML).attr({'attr.name': key, 'attr.type': 'string', 'for': 'node', 'id': key}).insertBefore($graph);
+                done.push(key);
+            }
+
+          }
+        });
+        $('<key />', $graphML).attr({'attr.name': 'x', 'attr.type': 'double', 'for': 'node', 'id': 'x'}).insertBefore($graph);
+        $('<key />', $graphML).attr({'attr.name': 'y', 'attr.type': 'double', 'for': 'node', 'id': 'y'}).insertBefore($graph);
+
+        var done = [];
+        data.edges.forEach(function(edge) {
+
+          for (var key in edge) {
+            // var test = $xml.find("key['attr.name'='"+key+"']");
+            if (done.indexOf(key) === -1 && key !=='from' && key !=='to' && key !=='id') {
+                $('<key />', $graphML).attr({'attr.name': key, 'attr.type': 'string', 'for': 'edge', 'id': key}).insertBefore($graph);
+                done.push(key);
+            }
+          }
+        });
+
+      };
+
+      data = normalizeGraph(data);
+      console.log(data);
+
+      generateKeys(data);
+
+      data.nodes.forEach(function (ele) {
+        var node = $('<node />', $graph).attr({id: ele.id}).appendTo($graph);
+
+        var eleData = ele;
+        for (var key in eleData) {
+          console.log('node key: ',key, eleData[key]);
+          if (eleData[key].length > 0 && key !== 'id' && key !=='coords') {
+              $('<data />', node).attr({key: key}).text(eleData[key]).appendTo(node);
+          }
+        }
+
+        var x = eleData['coords'][0] > 0 ? eleData['coords'][0] : null;
+        var y = eleData['coords'][1] > 0 ? 1080-eleData['coords'][1] : null;
+
+        $('<data />', node).attr({key: 'x'}).text(x).appendTo(node);
+        $('<data />', node).attr({key: 'y'}).text(y).appendTo(node);
+      });
+
+      data.edges.forEach(function (ele) {
+        console.log('processing edge');
+        var edge = $('<edge />', $graph).attr({id: ele.id, source: ele.from, target: ele.to}).appendTo($graph);
+
+        var eleData = ele;
+        for (var key in eleData) {
+          console.log('edge key: ', key);
+          if (key !== 'from' && key !=='to') {
+            $('<data />', edge).attr({key: key}).text(eleData[key]).appendTo(edge);
+          }
+        }
+
+      });
+
+
+      return xmlToString(xmlDoc);
+    };
+
     function saveFile(path) {
         if (window.isNodeWebkit) {
             var data = JSON.stringify(session.sessionData, undefined, 2);
+            var fs = nodeRequire('fs');
+            fs.writeFile(path, data);
+        } else {
+            note.warn('saveFile() is not yet implemented on this platform!');
+        }
+
+    }
+
+    function saveGraphML(path) {
+        if (window.isNodeWebkit) {
+            var data = session.createGraphML(session.sessionData);
             var fs = nodeRequire('fs');
             fs.writeFile(path, data);
         } else {
@@ -29,6 +176,14 @@ var Session = function Session() {
         var event = window.document.createEvent('MouseEvents');
         event.initMouseEvent('click');
         window.document.getElementById('save').dispatchEvent(event);
+    }
+
+    function clickGraphMLButton() {
+      console.log('clickgdfbutton');
+      $('#saveGraphML').prop('nwsaveas', session.returnSessionID()+'_'+Math.floor(Date.now() / 1000)+'.graphml');
+      var event = window.document.createEvent('MouseEvents');
+      event.initMouseEvent('click');
+      window.document.getElementById('saveGraphML').dispatchEvent(event);
     }
 
     // custom events
@@ -208,6 +363,11 @@ var Session = function Session() {
             saveFile(this.value);
         });
 
+        window.document.getElementById('saveGraphML').addEventListener('change', function () {
+          console.log('saveGraphML event detected');
+            saveGraphML(this.value);
+        });
+
         // Build a new network
         window.network = new window.netCanvas.Modules.Network();
 
@@ -238,7 +398,8 @@ var Session = function Session() {
             });
         });
 
-        window.menu.addItem(sessionMenu, 'Download Data', 'fa-download', function() { clickDownloadInput(); });
+        window.menu.addItem(sessionMenu, 'Download JSON', 'fa-download', function() { clickDownloadInput(); });
+        window.menu.addItem(sessionMenu, 'Download GraphML', 'fa-download', function() { clickGraphMLButton(); });
 
         window.menu.addItem(sessionMenu, 'Purge Database', 'fa-trash', function() {
             window.BootstrapDialog.show({
