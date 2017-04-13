@@ -195,6 +195,8 @@ module.exports = function OrdinalBin() {
             scroll: false,
             helper: 'clone',
             start: function() {
+              console.log(this);
+                $(this).hide();
                 // console.log($(this).css('top'));
                 // if ($(this).css('top') !== 'auto' && $(this).css('top') !== '0px') {
                 //     console.log('has class');
@@ -218,6 +220,7 @@ module.exports = function OrdinalBin() {
                 // $('.ord-node-bin').css({overflow:'hidden'});
             },
             stop: function() {
+                $(this).show();
                 $(this).css({position:'inerit'});
                 $('.ord-node-bin').css({overflowY:'scroll'});
             }

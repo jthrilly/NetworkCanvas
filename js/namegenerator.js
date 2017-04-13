@@ -521,7 +521,7 @@ module.exports = function Namegenerator() {
                       {label: "Any Other Group", value: 'group_15'}
                   ];
 
-        var groupEl = $('<div class="row"><h6 class="text-center">Which groups does this person belong to?</h6><div class="ego-group-row"></div></div>');
+        var groupEl = $('<div class="row"><h4 class="text-center">Which groups does this person belong to?</h4><div class="ego-group-row"></div></div>');
         var groupsExist = false;
         $.each(groups, function(groupIndex, group) {
           console.log(group);

@@ -171,10 +171,10 @@ module.exports = function sociogramNarrative() {
 		var name = this.value;
 
 		// event
-		var log = new window.CustomEvent('log', {'detail':{'eventType': 'changePreset', 'eventObject':this.Value}});
-		window.dispatchEvent(log);
-		var unsavedChanges = new window.Event('unsavedChanges')
-		window.dispatchEvent(unsavedChanges);
+		// var log = new window.CustomEvent('log', {'detail':{'eventType': 'changePreset', 'eventObject':this.Value}});
+		// window.dispatchEvent(log);
+		// var unsavedChanges = new window.Event('unsavedChanges')
+		// window.dispatchEvent(unsavedChanges);
 
 		$.each(settings.presets, function(presetIndex, presetValue) {
 			if (presetValue.name === name) {
@@ -345,10 +345,10 @@ module.exports = function sociogramNarrative() {
 		}
 
 		// event
-		var log = new window.CustomEvent('log', {'detail':{'eventType': 'toggleHulls', 'eventObject':{hullsShow: hullsShown}}});
-		window.dispatchEvent(log);
-		var unsavedChanges = new window.Event('unsavedChanges')
-		window.dispatchEvent(unsavedChanges);
+		// var log = new window.CustomEvent('log', {'detail':{'eventType': 'toggleHulls', 'eventObject':{hullsShow: hullsShown}}});
+		// window.dispatchEvent(log);
+		// var unsavedChanges = new window.Event('unsavedChanges')
+		// window.dispatchEvent(unsavedChanges);
 
 		$('label[for="context-checkbox-show"]').addClass('show');
 		setTimeout(function() {
@@ -359,10 +359,10 @@ module.exports = function sociogramNarrative() {
 
 	sociogramNarrative.resetNodeState = function() {
 		// event
-		var log = new window.CustomEvent('log', {'detail':{'eventType': 'resetNodes', 'eventObject':{}}});
-		window.dispatchEvent(log);
-		var unsavedChanges = new window.Event('unsavedChanges')
-		window.dispatchEvent(unsavedChanges);
+		// var log = new window.CustomEvent('log', {'detail':{'eventType': 'resetNodes', 'eventObject':{}}});
+		// window.dispatchEvent(log);
+		// var unsavedChanges = new window.Event('unsavedChanges')
+		// window.dispatchEvent(unsavedChanges);
 
 		// Reset select
 		var kineticNodes = sociogramNarrative.getKineticNodes();
@@ -1115,9 +1115,9 @@ module.exports = function sociogramNarrative() {
 					stage: window.netCanvas.Modules.session.currentStage(),
 					timestamp: new Date()
 				};
-				log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-				window.dispatchEvent(log);
-				taskComprehended = true;
+				// log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
+				// window.dispatchEvent(log);
+				// taskComprehended = true;
 			}
 
 			note.debug('dragstart');
@@ -1179,9 +1179,9 @@ module.exports = function sociogramNarrative() {
 					stage: window.netCanvas.Modules.session.currentStage(),
 					timestamp: new Date()
 				};
-				log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-				window.dispatchEvent(log);
-				taskComprehended = true;
+				// log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
+				// window.dispatchEvent(log);
+				// taskComprehended = true;
 			}
 
 			note.debug('Dragmove');
@@ -1236,17 +1236,17 @@ module.exports = function sociogramNarrative() {
 
 			selectedNodes = [];
 
-			if (taskComprehended === false) {
-				var eventProperties = {
-					stage: window.netCanvas.Modules.session.currentStage(),
-					timestamp: new Date()
-				};
-				log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-				window.dispatchEvent(log);
-				taskComprehended = true;
-			}
-			log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeClick', 'eventObject':this.attrs.id}});
-			window.dispatchEvent(log);
+			// if (taskComprehended === false) {
+			// 	var eventProperties = {
+			// 		stage: window.netCanvas.Modules.session.currentStage(),
+			// 		timestamp: new Date()
+			// 	};
+			// 	log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
+			// 	window.dispatchEvent(log);
+			// 	taskComprehended = true;
+			// }
+			// log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeClick', 'eventObject':this.attrs.id}});
+			// window.dispatchEvent(log);
 
 			var currentNode = this;
 
@@ -1291,10 +1291,10 @@ module.exports = function sociogramNarrative() {
 			var currentNode = this; // Store the context
 
 			// event
-			var log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeTap', 'eventObject':currentNode}});
-			window.dispatchEvent(log);
-			var unsavedChanges = new window.Event('unsavedChanges');
-			window.dispatchEvent(unsavedChanges);
+			// var log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeTap', 'eventObject':currentNode}});
+			// window.dispatchEvent(log);
+			// var unsavedChanges = new window.Event('unsavedChanges');
+			// window.dispatchEvent(unsavedChanges);
 
 			// var tween = new Konva.Tween({
 			// 	node: currentNode
@@ -1366,8 +1366,8 @@ module.exports = function sociogramNarrative() {
 			};
 
 			// Log the movement and save the graph state.
-			log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
-			window.dispatchEvent(log);
+			// log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
+			// window.dispatchEvent(log);
 
 			// store properties according to data destination
 			// Find the node we need to store the coordinates on, and update it.
@@ -1581,8 +1581,8 @@ module.exports = function sociogramNarrative() {
 
 		function killAnnotation(target) {
 			// event
-			var log = new window.CustomEvent('log', {'detail':{'eventType': 'annotation', 'eventObject':target.points}});
-			window.dispatchEvent(log);
+			// var log = new window.CustomEvent('log', {'detail':{'eventType': 'annotation', 'eventObject':target.points}});
+			// window.dispatchEvent(log);
 			var unsavedChanges = new window.Event('unsavedChanges');
 			window.dispatchEvent(unsavedChanges);
 
