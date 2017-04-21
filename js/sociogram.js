@@ -74,6 +74,7 @@ module.exports = function Sociogram() {
 		window.addEventListener('nodeRemoved', sociogram.removeNode, false);
 		window.addEventListener('edgeRemoved', sociogram.removeEdge, false);
 		window.addEventListener('changeStageStart', sociogram.destroy, false);
+		$(window.document).on('keydown', sociogram.keyDownHandler);
 
 		// Are there existing nodes? Display them.
 
@@ -200,10 +201,15 @@ module.exports = function Sociogram() {
 			if (e.which === 8 && !$(e.target).is('input, textarea, div')) {
 				e.preventDefault();
 			}
-
 		}
 	};
 
+	sociogram.keyDownHandler = function(e){
+		if (e.metaKey && e.keyCode === 82) {
+			sociogram.resetPositions();
+		}
+
+	}
 	sociogram.destroy = function() {
 
 		// menu.removeMenu(canvasMenu); // remove the window.network menu when we navigate away from the page.
@@ -215,17 +221,29 @@ module.exports = function Sociogram() {
 		window.removeEventListener('edgeRemoved', sociogram.removeEdge, false);
 		window.removeEventListener('changeStageStart', sociogram.destroy, false);
 		$(window.document).off('keypress', sociogram.keyPressHandler);
+		$(window.document).off('keydown', sociogram.keyDownHandler);
 
 	};
 
 	// Node manipulation functions
 
 	sociogram.resetPositions = function() {
-		var dyadEdges = sociogram.settings.network.getEdges({type:'Dyad'});
 
-		$.each(dyadEdges, function(index) {
-			sociogram.settings.network.updateEdge(dyadEdges[index].id, {coords: []});
+		var nodes = sociogram.getKineticNodes();
+		$.each(nodes, function(index, value) {
+			console.log(value);
+			value.attrs.coords = [$(window).width()-150,100];
+			value.setPosition({x:$(window).width()-150,y:100});
+			value.fire('dragmove');
 		});
+
+		var dyadEdges = sociogram.settings.network.getEdges({type:'Dyad'});
+		$.each(dyadEdges, function(edgeIndex,edge) {
+			edge.coords = [$(window).width()-150,100];
+		});
+
+		nodeLayer.draw();
+		edgeLayer.draw();
 	};
 
 	sociogram.addNode = function(options) {
@@ -376,6 +394,42 @@ module.exports = function Sociogram() {
 
 		});
 
+
+		nodeGroup.on('dragend', function() {
+			note.debug('dragend');
+
+			// set the context
+			var from = {};
+			var to = {};
+
+			// Fetch old position from properties populated by dragstart event.
+			from.x = this.attrs.oldx;
+			from.y = this.attrs.oldy;
+
+			to.x = this.attrs.x;
+			to.y = this.attrs.y;
+
+			// Add them to an event object for the logger.
+			var eventObject = {
+				nodeTarget: this.attrs.id,
+				from: from,
+				to: to,
+			};
+
+			var currentNode = this;
+
+			// Log the movement and save the graph state.
+			log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
+			window.dispatchEvent(log);
+
+			sociogram.settings.network.setProperties(sociogram.settings.network.getEdge(currentNode.attrs.id), {coords: [currentNode.attrs.x,currentNode.attrs.y]});
+
+			// remove the attributes, just incase.
+			delete this.attrs.oldx;
+			delete this.attrs.oldy;
+
+		});
+
 		nodeGroup.on('tap click', function() {
 			if (taskComprehended === false) {
 				var eventProperties = {
@@ -486,41 +540,6 @@ module.exports = function Sociogram() {
 			}
 			this.moveToTop();
 			nodeLayer.draw();
-		});
-
-		nodeGroup.on('dragend', function() {
-			note.debug('dragend');
-
-			// set the context
-			var from = {};
-			var to = {};
-
-			// Fetch old position from properties populated by dragstart event.
-			from.x = this.attrs.oldx;
-			from.y = this.attrs.oldy;
-
-			to.x = this.attrs.x;
-			to.y = this.attrs.y;
-
-			// Add them to an event object for the logger.
-			var eventObject = {
-				nodeTarget: this.attrs.id,
-				from: from,
-				to: to,
-			};
-
-			var currentNode = this;
-
-			// Log the movement and save the graph state.
-			log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
-			window.dispatchEvent(log);
-
-			sociogram.settings.network.setProperties(sociogram.settings.network.getEdge(currentNode.attrs.id), {coords: [currentNode.attrs.x,currentNode.attrs.y]});
-
-			// remove the attributes, just incase.
-			delete this.attrs.oldx;
-			delete this.attrs.oldy;
-
 		});
 
 		padText(nodeLabel,nodeShape,30);

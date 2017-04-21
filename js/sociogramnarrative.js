@@ -1106,119 +1106,86 @@ module.exports = function sociogramNarrative() {
 		} else {
 
 		}
-
 		// Node event handlers
 		nodeGroup.on('dragstart', function() {
-
 			if (taskComprehended === false) {
 				var eventProperties = {
 					stage: window.netCanvas.Modules.session.currentStage(),
 					timestamp: new Date()
 				};
-				// log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-				// window.dispatchEvent(log);
-				// taskComprehended = true;
+				log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
+				window.dispatchEvent(log);
+				taskComprehended = true;
 			}
+
 
 			note.debug('dragstart');
 
 			// Add the current position to the node attributes, so we know where it came from when we stop dragging.
 			this.attrs.oldx = this.attrs.x;
 			this.attrs.oldy = this.attrs.y;
-
-			if (this.attrs.positioned === false ) {
-				this.attrs.positioned = true;
-				nodesWithoutPositions--;
-				if (nodesWithoutPositions < 1) {
-					newNodeCircleTween.reverse();
-					newNodeCircleVisible = false;
-				}
-			}
-
 			this.moveToTop();
 			nodeLayer.draw();
-
-			var dragNode = nodeOptions.id;
-
-			// Update the position of any connected edges and hulls
-			var pointHulls = this.attrs.contexts;
-			for (var i = 0; i < pointHulls.length; i++) {
-				var newHull = new ConvexHullGrahamScan();
-
-				for (var j = 0; j < nodeLayer.children.length; j++) {
-					var thisChildHulls = nodeLayer.children[j].attrs.contexts;
-					if (thisChildHulls.indexOf(pointHulls[i]) !== -1) {
-						var coords = nodeLayer.children[j].getPosition();
-						newHull.addPoint(coords.x, coords.y);
-					}
-				}
-				var hull = newHull.getHull();
-
-				var pointFromObject = toPointFromObject(hull);
-
-				hullShapes[pointHulls[i]].setPoints(pointFromObject);
-				hullLayer.batchDraw();
-
-			}
-
-			$.each(edgeLayer.children, function(index, value) {
-
-				// value.setPoints([dragNode.getX(), dragNode.getY() ]);
-				if (value.attrs.from === dragNode || value.attrs.to === dragNode) {
-					var points = [sociogramNarrative.getNodeByID(value.attrs.from).getX(), sociogramNarrative.getNodeByID(value.attrs.from).getY(), sociogramNarrative.getNodeByID(value.attrs.to).getX(), sociogramNarrative.getNodeByID(value.attrs.to).getY()];
-					value.attrs.points = points;
-				}
-			});
-
 		});
 
 		nodeGroup.on('dragmove', function() {
-
 			if (taskComprehended === false) {
 				var eventProperties = {
 					stage: window.netCanvas.Modules.session.currentStage(),
 					timestamp: new Date()
 				};
-				// log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
-				// window.dispatchEvent(log);
-				// taskComprehended = true;
+				log = new window.CustomEvent('log', {'detail':{'eventType': 'taskComprehended', 'eventObject':eventProperties}});
+				window.dispatchEvent(log);
+				taskComprehended = true;
 			}
 
 			note.debug('Dragmove');
-
 			var dragNode = nodeOptions.id;
-			// Update the position of any connected edges and hulls
-			var pointHulls = this.attrs.contexts;
-			for (var i = 0; i < pointHulls.length; i++) {
-				var newHull = new ConvexHullGrahamScan();
-
-				for (var j = 0; j < nodeLayer.children.length; j++) {
-					var thisChildHulls = nodeLayer.children[j].attrs.contexts;
-					if (thisChildHulls.indexOf(pointHulls[i]) !== -1) {
-						var coords = nodeLayer.children[j].getPosition();
-						newHull.addPoint(coords.x, coords.y);
-					}
-				}
-
-				var hull = newHull.getHull();
-
-				var pointFromObject = toPointFromObject(hull);
-
-				hullShapes[pointHulls[i]].setPoints(pointFromObject);
-				hullLayer.batchDraw();
-
-			}
-
 			$.each(edgeLayer.children, function(index, value) {
-
-				// value.setPoints([dragNode.getX(), dragNode.getY() ]);
-				if (value.attrs.from === dragNode || value.attrs.to === dragNode) {
+				if (sociogramNarrative.getNodeByID(value.attrs.from).attrs.id === dragNode || sociogramNarrative.getNodeByID(value.attrs.to).attrs.id === dragNode) {
 					var points = [sociogramNarrative.getNodeByID(value.attrs.from).getX(), sociogramNarrative.getNodeByID(value.attrs.from).getY(), sociogramNarrative.getNodeByID(value.attrs.to).getX(), sociogramNarrative.getNodeByID(value.attrs.to).getY()];
 					value.attrs.points = points;
 
 				}
 			});
-			edgeLayer.batchDraw();
+			edgeLayer.draw();
+
+		});
+
+
+		nodeGroup.on('dragend', function() {
+			note.debug('dragend');
+
+			// set the context
+			var from = {};
+			var to = {};
+
+			// Fetch old position from properties populated by dragstart event.
+			from.x = this.attrs.oldx;
+			from.y = this.attrs.oldy;
+
+			to.x = this.attrs.x;
+			to.y = this.attrs.y;
+
+			// Add them to an event object for the logger.
+			var eventObject = {
+				nodeTarget: this.attrs.id,
+				from: from,
+				to: to,
+			};
+
+			var currentNode = this;
+
+			// Log the movement and save the graph state.
+			log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
+			window.dispatchEvent(log);
+
+			window.network.setProperties(window.network.getEdge(currentNode.attrs.id), {coords: [currentNode.attrs.x,currentNode.attrs.y]});
+
+			// remove the attributes, just incase.
+			delete this.attrs.oldx;
+			delete this.attrs.oldy;
+
 		});
 
 		nodeGroup.on('touchstart mousedown', function() {
@@ -1310,78 +1277,6 @@ module.exports = function sociogramNarrative() {
 			animations.push(animation);
 
 			animation.start();
-		});
-
-		nodeGroup.on('dragend', function() {
-
-			var dragNode = nodeOptions.id;
-			// Update the position of any connected edges and hulls
-			var pointHulls = this.attrs.contexts;
-			for (var i = 0; i < pointHulls.length; i++) {
-				var newHull = new ConvexHullGrahamScan();
-
-				for (var j = 0; j < nodeLayer.children.length; j++) {
-					var thisChildHulls = nodeLayer.children[j].attrs.contexts;
-					if (thisChildHulls.indexOf(pointHulls[i]) !== -1) {
-						var coords = nodeLayer.children[j].getPosition();
-						newHull.addPoint(coords.x, coords.y);
-					}
-				}
-
-				hullShapes[pointHulls[i]].setPoints(toPointFromObject(newHull.getHull()));
-				hullLayer.draw();
-
-			}
-
-			$.each(edgeLayer.children, function(index, value) {
-
-				// value.setPoints([dragNode.getX(), dragNode.getY() ]);
-				if (value.attrs.from === dragNode || value.attrs.to === dragNode) {
-					var points = [sociogramNarrative.getNodeByID(value.attrs.from).getX(), sociogramNarrative.getNodeByID(value.attrs.from).getY(), sociogramNarrative.getNodeByID(value.attrs.to).getX(), sociogramNarrative.getNodeByID(value.attrs.to).getY()];
-					value.attrs.points = points;
-
-				}
-			});
-			edgeLayer.draw();
-
-			note.debug('Drag ended at x: '+this.attrs.x+' y: '+this.attrs.y);
-
-			// set the context
-			var from = {};
-			var to = {};
-
-			// Fetch old position from properties populated by dragstart event.
-			from.x = this.attrs.oldx;
-			from.y = this.attrs.oldy;
-
-			to.x = this.attrs.x;
-			to.y = this.attrs.y;
-
-			this.attrs.coords = [this.attrs.x,this.attrs.y];
-
-			// Add them to an event object for the logger.
-			var eventObject = {
-				from: from,
-				to: to,
-			};
-
-			// Log the movement and save the graph state.
-			// log = new window.CustomEvent('log', {'detail':{'eventType': 'nodeMove', 'eventObject':eventObject}});
-			// window.dispatchEvent(log);
-
-			// store properties according to data destination
-			// Find the node we need to store the coordinates on, and update it.
-
-			// Create a dummy object so we can use the variable name set in settings.dataDestination
-			var properties = {};
-			properties.coords = this.attrs.coords;
-
-			// Update the node with the object
-			settings.network.updateNode(this.attrs.id, properties);
-			// remove the attributes, just incase.
-			delete this.attrs.oldx;
-			delete this.attrs.oldy;
-
 		});
 
 		return nodeGroup;
