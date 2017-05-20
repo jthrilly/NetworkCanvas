@@ -308,7 +308,7 @@ module.exports = function GeoInterface() {
             maxBoundsViscosity: 0.1
         });
 
-        window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+        window.L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
             subdomains: '1234',
             mapID: 'newest',
             app_id: 'FxdAZ7O0Wh568CHyJWKV',

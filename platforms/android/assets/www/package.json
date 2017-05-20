@@ -1,13 +1,38 @@
 {
-  "name": "network-canvas",
-  "version": "4.0.0",
-  "productName": "Network Canvas",
-  "description": "A touch-optimised framework for capturing personal network data.",
+  "name": "netCanvas",
+  "version": "2.0.0",
+  "description": "An NWjs based personal network capture tool, customised for the RADAR project.",
   "private": true,
-  "engines": {
-    "node": "6.9.1",
-    "npm": "3.10.7"
+  "single-instance": true,
+  "homepage": "https://github.com/jthrilly/netCanvas",
+  "bugs": "https://github.com/jthrilly/netCanvas/issues",
+  "author": {
+    "name": "Joshua Melville",
+    "email": "joshmelville@gmail.com",
+    "url": "https://github.com/jthrilly"
   },
-  "homepage": ".",
-  "main": "electron-starter.js"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jthrilly/netCanvas.git"
+  },
+  "dependencies": {
+    "jsdom": "^4.3.0",
+    "nedb": "^1.1.1",
+    "xmlhttprequest": "^1.7.0"
+  },
+  "devDependencies": {},
+  "main": "app://netCanvas/index.html",
+  "scripts": {
+    "start": "nodewebkit"
+  },
+  "window": {
+    "toolbar": false,
+    "frame": true,
+    "position": "center",
+    "width": 1920,
+    "height": 1080,
+    "min_width": 100,
+    "min_height": 80
+    },
+    "chromium-args" : "--touch-devices=10 --touch-events=enabled --enable-pinch"
 }
