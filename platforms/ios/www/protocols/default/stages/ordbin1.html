@@ -1,0 +1,29 @@
+<div class="container full-height text-center">
+
+</div>
+
+<script>
+
+var ordbin = new window.netCanvas.Modules.OrdBin();
+ordbin.init({
+	targetEl: $('.container'),
+	edgeType: 'Dyad',
+	criteria: {
+		type:'Dyad',
+		from: window.network.getNodes({type_t0:'Ego'})[0].id
+	},
+	variable: {
+		label:'education_t0',
+		values: [
+			{label:'Graduate or professional degree', value: 4},
+			{label:'College diploma or Bachelor\'s Degree', value: 3},
+			{label:'Some college', value: 2},
+			{label:'High school graduate', value: 1},
+			{label:'Less than high school', value: 0}
+		]
+	},
+	heading: "As far as you know, please select highest level of education for each person.",
+	subheading: ""
+});
+
+</script>

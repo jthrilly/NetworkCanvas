@@ -37,6 +37,17 @@ p {
   margin: 0 0 1.4em 0;
 }
 
+.bootstrap-dialog-message {
+  h3 {
+    font-size: 2.2em;
+    margin-top: 0;
+    margin-bottom:45px;
+  }
+  p {
+    font-size: 1.6em;
+  }
+}
+
 .study-welcome h1 {
   margin-bottom:1em;
 }
@@ -74,12 +85,6 @@ p {
     background: @brand-primary;
     border: 5px solid @brand-primary;
   }
-}
-
-@media (min-width: 1024px) {
-    body {
-        font-size: 2vmin;
-    }
 }
 
 .not-listed {
@@ -403,7 +408,7 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
     justify-content: center;
     overflow:hidden;
     opacity: 1;
-    transition: 0.2s all ease-in-out;
+    transition: 0.5s all ease-in-out;
 }
 
 .content.stageHidden {
@@ -412,7 +417,7 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
 
 
 .container {
-    // width:85% !important;
+    width:85% !important;
     // padding:0 !important;
     overflow: hidden;
     display: flex;
@@ -421,12 +426,12 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
     justify-content: center;
 }
 
-@media (min-width: @screen-lg) {
-    .container {
-        width: 80% !important;
-    }
-
-}
+// @media (min-width: @screen-lg) {
+//     .container {
+//         width: 80% !important;
+//     }
+//
+// }
 
 
 .node-bin-container {
@@ -444,13 +449,17 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
     align-items: center;
     justify-content: center;
     width:100%;
-    height:75vh;
+    height:70vh;
     padding-bottom:1vmin;
     flex-flow: row wrap;
 }
 
 .node-question-container {
-    height:20vh;
+    height:200px;
+    min-height:30vh;
+    h1 {
+      font-size: 1.5em;
+    }
 }
 
 
@@ -470,44 +479,6 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
 }
 
 // map
-
-#map {
-    height: 100%;
-    width:100%;
-}
-
-
-.map-node-container {
-    width:25vw !important;
-    padding:30px !important;
-    background: black;
-    position:absolute;
-    // bottom:30px;
-    bottom: 90px;
-    left:90px;
-    border-radius: 12px;
-}
-
-.map-counter {
-    margin-bottom: 0;
-    line-height: 2.1em;
-}
-
-.map-node-box {
-    display:inline-flex;
-    align-items: center;
-    justify-content: center;
-    height:200px;
-}
-
-.map-node {
-    padding:20px;
-    border-radius: 30px;
-    background: #eee;
-    color:black;
-}
-
-// end map
 
 .followup {
     position:absolute;
@@ -630,14 +601,17 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
 }
 
 .card {
-    width:300px;
-    height:300px;
+    width:280px;
+    height:280px;
     padding:10px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     color:white;
     text-align: center;
+    &:last-of-type {
+      margin-bottom:400px;
+    }
 }
 
 @media (max-width: 1224px) {
@@ -676,7 +650,7 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
 
 .card.ghost {
     opacity:0;
-    transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+    transition: all 0.3s ease-in-out;
 }
 
 .card.ghost.show {
@@ -744,7 +718,7 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
     color: @brand-success;
 }
 
-.card h4 {
+.card h3 {
     margin-top:0;
 }
 
@@ -753,7 +727,7 @@ div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active
     list-style-type: none;
     margin:0;
     padding:0;
-    font-size:13px;
+    font-size:18px;
 }
 
 
@@ -940,6 +914,7 @@ input.faChkSqr:after {
     flex-wrap: wrap;
     padding:5px;
     padding-top:19vh;
+    padding-bottom: 30px;
 }
 
 .list-container .item {
@@ -966,7 +941,6 @@ input.faChkSqr:after {
 .list-container .item h3 {
     display:inline;
     margin:0;
-    font-size:2vmin;
 }
 
 .question-container {
@@ -980,7 +954,7 @@ input.faChkSqr:after {
     z-index:10;
     background-image:linear-gradient(to bottom, @content-bg 0%, @content-bg 10%, fade(@content-bg, 0%) 100%);
     h1 {
-      font-size:3.3vh;
+      font-size:1.5em;
     }
 }
 
@@ -1233,11 +1207,11 @@ input.faChkSqr:after {
     bottom:0;
     left:0;
     right:0;
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,0.9);
     z-index:20;
     opacity:0;
     display:none;
-    transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+    transition: all 0.3s ease-in-out;
  }
 
  .black-overlay.show {
@@ -1253,7 +1227,7 @@ input.faChkSqr:after {
     // justify-content: center;
     border-radius: @border-radius-large;
     text-shadow: 0px 1px 5px rgba(0,0,0,0.5);
-    transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+    transition: all 0.3s ease-in-out;
     // overflow:scroll;
  }
 
@@ -1505,14 +1479,14 @@ input.faChkSqr:after {
     top:10vh;
     left:25vw;
     right: 25vw;
-    padding:3vmin;
+    padding:30px;
     // max-height:75vmin;
     border-radius:12px;
     background:#eee;
     transform: translateY(-100vh);
     opacity: 0;
     z-index:22;
-    transition: all 0.25s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 .newNodeBox > * {
@@ -1534,10 +1508,9 @@ input.faChkSqr:after {
 }
 
 .relationships {
-    left:20vw;
-    right:20vw;
-    height:55vmin !important;
-
+    left: 15%;
+    right: 15%;
+    height: 690px!important;
 }
 
 @media (max-width: 1024px) {
@@ -1626,7 +1599,6 @@ input[type="checkbox"] {
     font-weight:500;
     flex: 1 0;
     margin-bottom: 1vmin;
-    font-size:1.7vmin;
 }
 
 .relationship-type h1 {
@@ -1644,8 +1616,8 @@ input[type="checkbox"] {
 
 .add-button {
     position: absolute;
-    bottom: 20px;
-    right: 40px;
+    bottom: 80px;
+    right: 100px;
     z-index:12;
     cursor:pointer;
 }
@@ -1673,7 +1645,7 @@ input[type=radio]:checked + label>img {
     left:0;
     width:100%;
     height:auto;
-    transition: transform 0.25s cubic-bezier(0.7, 0, 0.3, 1) 0.1s;
+    transition: transform 0.25s ease-in-out;
 }
 
 .new-node-form.node-form-open {
@@ -1714,7 +1686,7 @@ input[type=radio]:checked + label>img {
 
 .bodyfade {
    opacity: 1;
-   transition: opacity 2s cubic-bezier(0.7, 0, 0.3, 1);
+   transition: opacity 2s ease-in-out;
    }
 
 
@@ -1745,7 +1717,7 @@ label {
     position: absolute;
     top: 40%;
     left: 0;
-    width: 3.3em;
+    width: 2.5em;
     height: 5px;
     border-radius: 2.5px;
     background: #fff;

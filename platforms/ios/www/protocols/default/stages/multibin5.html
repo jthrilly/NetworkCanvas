@@ -1,0 +1,29 @@
+<div class="container full-height text-center">
+
+</div>
+
+<script>
+
+var multiBin = new window.netCanvas.Modules.MultiBin();
+multiBin.init({
+	targetEl: $('.container'),
+	edgeType: 'Dyad',
+	criteria: {
+		type:'Dyad',
+		from: window.network.getNodes({type_t0:'Ego'})[0].id
+	},
+	variable: {
+		label:'gender_p_t0',
+		values: [
+			'Cisgender Female',
+			'Cisgender Male',
+			'Transgender:<br> Female to Male',
+			'Transgender:<br> Male to Female',
+			'Not Listed'
+		]
+	},
+	heading: "Please specify how each of these people currently identify their gender.",
+	subheading: ""
+});
+
+</script>

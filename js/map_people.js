@@ -41,10 +41,10 @@ module.exports = function GeoInterface() {
     function highlightFeature(e) {
       console.log('highlight feature');
         var layer = e.target;
-        leaflet.fitBounds(e.target.getBounds());
+        // leaflet.fitBounds(e.target.getBounds());
 
         layer.setStyle({
-            fillOpacity: 0.8,
+          fillOpacity: 0.8,
           fillColor: colors[1]
         });
 
@@ -57,11 +57,17 @@ module.exports = function GeoInterface() {
 
     function selectFeature(e) {
         var layer = e;
-        leaflet.fitBounds(e.getBounds());
+        // leaflet.fitBounds(e.getBounds(), 3);
+        // setTimeout(function() {
+        //   leaflet.setZoom(4);
+        // }, 500);
+        // console.log(e.getBounds());
+        // leaflet.panTo(e.getBounds());
+        leaflet.setView(e.getBounds().getCenter(), 4);
 
         layer.setStyle({
             fillOpacity: 0.8,
-          fillColor: colors[1]
+          fillColor: colors[4]
         });
 
         if (!window.L.Browser.ie && !window.L.Browser.opera) {
@@ -86,7 +92,7 @@ module.exports = function GeoInterface() {
 
     function resetPosition() {
         note.debug('resetPosition()');
-        // leaflet.setView([41.798395426119534,-87.839671372338884], 6);
+        leaflet.setView([31.59, 120.29], 3);
     }
 
 
@@ -295,11 +301,11 @@ module.exports = function GeoInterface() {
             // maxBounds: [[41.4985986599114, -88.498240224063451],[42.1070175291862,-87.070984247165939]],
             zoomControl: false,
             center: [31.59, 120.29],
-            minZoom: 4,
             maxZoom: 6,
             noWrap: true,
             maxBounds: bounds,
-            maxBoundsViscosity: 1.0
+            preferCanvas: true,
+            maxBoundsViscosity: 0.1
         });
 
         window.L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -377,7 +383,7 @@ module.exports = function GeoInterface() {
 
     geoInterface.drawUIComponents = function() {
         note.debug('geoInterface.drawUIComponents()');
-        geoInterface.options.targetEl.append('<div class="container map-node-container"><div class="row" style="width:100%"><div class="col-sm-4 text-left"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-back"><span class="glyphicon glyphicon-arrow-left"></span></span></div></div><div class="col-sm-4 text-center"><p class="lead map-counter"></p></div><div class="col-sm-4 text-right"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-forwards"><span class="glyphicon glyphicon-arrow-right"></span></span></div></div></div><div class="row form-group"><div class="col-sm-12 text-center"><p class="lead map-node-status"></p><p class="lead map-node-location"></p></div></div><div class="row"></div>');
+        geoInterface.options.targetEl.append('<div class="map-node-container"><div class="row" style="width:100%"><div class="col-sm-4 text-left"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-back"><span class="glyphicon glyphicon-arrow-left"></span></span></div></div><div class="col-sm-4 text-center"><p class="map-counter"></p></div><div class="col-sm-4 text-right"><div class="map-node-navigation"><span class="btn btn-primary btn-block map-forwards"><span class="glyphicon glyphicon-arrow-right"></span></span></div></div></div><div class="row form-group"><div class="col-sm-12 text-center"><p class="map-node-status"></p><p class="map-node-location"></p></div></div><div class="row"></div>');
         $('.map-node-status').html(safePrompt());
 
         if (geoInterface.options.variable.other_options && geoInterface.options.variable.other_options.length > 0) {

@@ -1,0 +1,2 @@
+# radar-protocol
+This repository stores the work in progress on the RADAR (http://www.impactprogram.org/radar/) study protocol from IMPACT at Northwestern University (http://www.impactprogram.org/). Please contact Michelle Birkett (birkett@northwestern.edu) with any further questions.

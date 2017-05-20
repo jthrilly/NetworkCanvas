@@ -376,6 +376,10 @@ var Session = function Session() {
         }, false);
 
         var sessionMenu = window.menu.addMenu('Session','cogs');
+
+        // demo menu items
+        window.menu.addItem(sessionMenu, "Generate test alters", 'fa-cogs', function() {setTimeout(function() { namegenerator.generateTestAlters(5);}, 500); });
+
         window.menu.addItem(sessionMenu, 'Reset Session', 'fa-undo', function() {
             window.BootstrapDialog.show({
                 type: window.BootstrapDialog.TYPE_DANGER,
@@ -610,7 +614,7 @@ var Session = function Session() {
                 }, 200);
 
             });
-        }, 200);
+        }, 500);
 
         var oldStage = currentStage;
         currentStage = newStage;

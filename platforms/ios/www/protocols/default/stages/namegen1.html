@@ -1,0 +1,23 @@
+<div class="container full-height">
+
+</div>
+
+<script>
+
+var namegenerator = new window.netCanvas.Modules.NameGenerator();
+namegenerator.init({
+	targetEl: $('.container'),
+	edgeTypes:['Dyad'],
+	variables: [
+		{label:'type_t0',variable:'type_t0',target:'node', private: true, value:'Alter', type:'text', required:true, edge: '',node:'Alter'},
+		{label:'Name',variable:'name_t0',target:'edge', private: false, type:'text', required:true, edge: 'Dyad',node:''},
+		{label:'Nickname',variable:'nname_t0',target:'edge', private: false, type:'text', required:true, edge: 'Dyad',node:''},
+		{label:'Age',variable:'age_p_t0',target:'edge', private: false, type:'number', required:true, edge: 'Dyad',node:''},
+		{label:'ng_t0',variable:'ng_t0',target:'edge', private: true, value:'closest', type:'text', required:true, edge: 'Dyad',node:''},
+	],
+	heading: "From time to time, most people discuss important matters with other people. Looking back over the last six months — who are the people with whom you discussed matters important to you?",
+	subheading: ''
+});
+
+
+</script>

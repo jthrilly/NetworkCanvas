@@ -1,0 +1,19 @@
+<div id="kineticCanvas"></div>
+
+<script>
+var criteria = {
+    type:'Dyad',
+    from:window.network.getNodes({type_t0:'Ego'})[0].id
+};
+
+var sociogram = new window.netCanvas.Modules.Sociogram();
+sociogram.init({
+    network: window.network,
+    mode:'Edge', //edge, position, select
+    targetEl: $('.container'),
+    edgeType: "social",
+    criteria: criteria,
+    heading: "Please draw a line between people who are especially close to each other",
+    subheading: "Tap a person to select them, and then tap another person to create a line."
+});
+</script>

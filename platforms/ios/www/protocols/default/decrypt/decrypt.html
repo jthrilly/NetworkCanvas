@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
+      #holder.hover { border: 10px dashed #333; }
+    </style>
+<script>
+/* global window, nodeRequire, FastClick, document, Konva, $, L, log, note, tools, isNodeWebkit */
+$(document).ready(function() {
+    'use strict';
+
+    var saltedKey = null;
+    var key = 'N3"u6tH@2wH9UM205niU=45J7y<(3=OC{2<:Lb+KqD2HG9!f6{VVL#&2/Mt+lV3';
+
+    var setSaltedKey = function() {
+        saltedKey = prompt('Enter the Interviewer ID:', '');
+    }
+
+    var decryptSessionData = function(data) {
+        if (saltedKey) {
+            // safe to use node modules.
+            var fs = nodeRequire('fs');
+            var gui = nodeRequire('nw.gui');
+            var saltedKey = session.getSaltedKey();
+            var text = JSON.stringify(data, undefined, 2); // indentation level = 2;
+            var encrypted = CryptoJS.AES.encrypt(text, saltedKey);
+            var path = nodeRequire('path');
+            var fileName = Math.floor(Date.now() / 1000).toString();
+            var location = path.join(gui.App.dataPath, fileName+'.netCanvas');
+            fs.writeFile(location, encrypted, 'utf8', function (err) {
+            if (err) {
+                throw err;
+            }
+                return true;
+            });
+        } else {
+            setSaltedKey();
+        }
+
+    };
+
+        // prevent default behavior from changing page on dropped file
+     window.ondragover = function(e) { e.preventDefault(); return false };
+     // NOTE: ondrop events WILL NOT WORK if you do not "preventDefault" in the ondragover event!!
+     window.ondrop = function(e) { e.preventDefault(); return false };
+
+     var holder = document.getElementById('holder');
+     holder.ondragover = function () { this.className = 'hover'; return false; };
+     holder.ondragleave = function () { this.className = ''; return false; };
+     holder.ondrop = function (e) {
+       e.preventDefault();
+
+       for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+           var file = e.dataTransfer.files[i],
+              reader = new FileReader();
+          reader.onload = function (event) {
+            console.log(event.target);
+          };
+          console.log(file);
+          reader.readAsDataURL(file);
+       }
+       return false;
+     };
+
+});
+</script>
+
+</head>
+<body>
+  <div id="holder">Drag the file to decrypt</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<div class="container">
+	<div class="col-md-6" style="margin-bottom:2em">
+		<img src="img/nc-logo.svg" alt="Network Canvas" width="100%" />
+	</div>
+	<div class="col-md-6 study-welcome clearfix">
+		<p>This demonstration is designed to show some of the features of Network Canvas. It is inspired by the 2004 General Social Survey.</p>
+			<h3>Please note:</h3>
+			<p>Data from this demonstration will be stored locally and will appear the next time you open Network Canvas unless you explicitly reset the session. This is done by clicking the gear icon in the top left, and selecting "reset session". Data is never uploaded to a third party.</p>
+		<div class="alert alert-success clearfix">
+			<p class="text-center" style="margin-bottom:1em">To begin, click continue.</p>
+			<div class="form-group text-center">
+				<button type="submit" class="btn btn-primary submit-1">Continue</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+<script>
+	var idSet = false, changed = false;
+
+	if (typeof window.network.getNode(0).radar_id !== 'undefined') {
+		idSet = window.network.getNode(0).radar_id;
+	}
+
+	// Disable navigation to a random stage if we are at visit > 1 and we don't have a previous network, or if we are a fresh session.
+	if (!window.network.getEgo()) {
+		window.netCanvas.Modules.session.disableNavigation();
+	}
+
+	function processData() {
+		// check if ego node already exists
+		if (window.network.getEgo() === false) {
+		  // if not, create a new root node
+			window.network.createEgo({
+			  label:'Root'
+			});
+
+		}
+
+	  // Continue to next stage
+	  window.netCanvas.Modules.session.enableNavigation();
+	  window.netCanvas.Modules.session.nextStage();
+	}
+
+	$(".submit-1").click(function( event ) {
+		// Prevent the form actually submitting. We're going to process the data manually.
+		event.preventDefault();
+		processData();
+	});
+
+
+</script>

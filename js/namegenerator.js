@@ -328,7 +328,7 @@ module.exports = function Namegenerator() {
             });
 
             $('div[data-index='+editing+']').html('');
-            $('div[data-index='+editing+']').append('<h4>'+properties.nname_t0+'</h4>');
+            $('div[data-index='+editing+']').append('<h3>'+properties.nname_t0+'</h3>');
             var list = $('<ul></ul>');
 
             $.each(namegenerator.options.variables, function(index, value) {
@@ -448,13 +448,13 @@ module.exports = function Namegenerator() {
         window.tools.extend(namegenerator.options, options);
         // $.extend(true, namegenerator.options, options);
         // create elements
-        var button = $('<span class="fa fa-4x fa-user-plus add-button"></span>');
+        var button = $('<span class="fa fa-3x fa-user-plus add-button"></span>');
         namegenerator.options.targetEl.append(button);
         var alterCountBox = $('<div class="alter-count-box"></div>');
         namegenerator.options.targetEl.append(alterCountBox);
 
         // create node box
-        var newNodeBox = $('<div class="newNodeBox overlay"><form role="form" id="ngForm" class="form"><div class="col-sm-12"><h2 style="margin-top:0;margin-bottom:30px;"><span class="fa fa-user-plus"></span> Adding a Person</h2></div><div class="col-sm-12 fields"></div></form></div>');
+        var newNodeBox = $('<div class="newNodeBox overlay"><form role="form" id="ngForm" class="form"><div class="col-sm-12"><h2 style="margin-top:0;margin-bottom:30px;">Adding a Person</h2></div><div class="col-sm-12 fields"></div></form></div>');
 
         // namegenerator.options.targetEl.append(newNodeBox);
         $('body').append(newNodeBox);
@@ -546,10 +546,10 @@ module.exports = function Namegenerator() {
         newNodePanel = $('.newNodeBox').html();
 
         // relationship types
-        relationshipPanel = $('<div class="relationship-content"><div class="relationship-close-button">Back <span class="fa fa-2x fa-sign-in"></span></div><div class="col-sm-12 relationship-header"><h2 style="margin-top:0;margin-bottom:30px;"><span class="fa fa-connectdevelop"></span> Adding Relationships</h2></div><div class="relationship-types-container"></div></div>');
+        relationshipPanel = $('<div class="relationship-content"><div class="relationship-close-button">Back</div><div class="col-sm-12 relationship-header"><h2 style="margin-top:0;margin-bottom:30px;">Adding Relationships</h2></div><div class="relationship-types-container"></div></div>');
         var counter = 0;
         $.each(namegenerator.options.roles, function(index) {
-            $(relationshipPanel).find('.relationship-types-container').append('<div class="relationship-type rel-'+counter+' c'+counter+'" data-main-relationship="'+counter+'"><h1>'+index+'</h1></div>');
+            $(relationshipPanel).find('.relationship-types-container').append('<div class="relationship-type rel-'+counter+' c'+counter+'" data-main-relationship="'+counter+'"><h4>'+index+'</h4></div>');
             $.each(namegenerator.options.roles[index], function(relIndex, relValue) {
                 $(relationshipPanel).find('.rel-'+counter).append('<div class="relationship" data-sub-relationship="'+relValue+'">'+relValue+'</div>');
             });
@@ -833,7 +833,7 @@ module.exports = function Namegenerator() {
         // var index = $(this).data('index');
         var card;
 
-        card = $('<div class="card"><div class="inner-card" data-index="'+properties.to+'"><h4>'+properties.nname_t0+'</h4></div></div>');
+        card = $('<div class="card"><div class="inner-card" data-index="'+properties.to+'"><h3>'+properties.nname_t0+'</h3></div></div>');
         var list = $('<ul></ul>');
         $.each(namegenerator.options.variables, function(index, value) {
             if (value.private === false && properties[value.variable] !== undefined && properties[value.variable] !== '') {
