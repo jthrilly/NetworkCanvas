@@ -45,7 +45,7 @@ module.exports = function GeoInterface() {
 
         layer.setStyle({
           fillOpacity: 0.8,
-          fillColor: colors[1]
+          fillColor: colors[4]
         });
 
         if (!window.L.Browser.ie && !window.L.Browser.opera) {
@@ -308,14 +308,20 @@ module.exports = function GeoInterface() {
             maxBoundsViscosity: 0.1
         });
 
-        window.L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
-            subdomains: '1234',
-            mapID: 'newest',
-            app_id: 'FxdAZ7O0Wh568CHyJWKV',
-            app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
-            base: 'base',
-            center: [31.59, 120.29]
-        }, { noWrap: true}).addTo(leaflet);
+        // window.L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+        //     subdomains: '1234',
+        //     mapID: 'newest',
+        //     app_id: 'FxdAZ7O0Wh568CHyJWKV',
+        //     app_code: 'FuQ7aPiHQcR8BSnXBCCmuQ',
+        //     base: 'base',
+        //     center: [31.59, 120.29]
+        // }, { noWrap: true}).addTo(leaflet);
+
+
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            center: [31.59, 120.29],
+	          attribution: '&copy; OpenStreetMap'
+        }).addTo(leaflet);
 
 
         $.ajax({
@@ -325,7 +331,7 @@ module.exports = function GeoInterface() {
             	geojson = window.L.geoJson(data, {
                 	onEachFeature: onEachFeature,
                 	style: function () {
-                  		return {weight:1,fillOpacity:0,strokeWidth:0.2, color:colors[1]};
+                  		return {weight:1,fillOpacity:0,strokeWidth:0.2, color:colors[4]};
                 	}
             	}).addTo(leaflet);
 

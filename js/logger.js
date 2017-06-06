@@ -10,12 +10,12 @@ var Logger = function Logger() {
     logger.init = function() {
         note.info('Logger initialising.');
 
-        window.log = window.netCanvas.Modules.session.registerData('log', true);
+        // window.log = window.netCanvas.Modules.session.registerData('log', true);
 
         // listen for log events
-        window.addEventListener('log', function (e) {
-            logger.addToLog(e.detail);
-        }, false);
+        // window.addEventListener('log', function (e) {
+        //     logger.addToLog(e.detail);
+        // }, false);
 
         return true;
     };

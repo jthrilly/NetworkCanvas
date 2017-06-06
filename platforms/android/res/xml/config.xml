@@ -8,4 +8,6 @@
         Joshua Melville
     </author>
     <preference name="loglevel" value="DEBUG" />
+    <preference name="target-device" value="tablet" />
+    <preference name="DisallowOverscroll" value="true" />
 </widget>

@@ -2,8 +2,10 @@ Icon^M^M.DS_Store
 npm-debug.log
 *.app
 *.zip
-/node_modules
+node_modules/
 build/
+res/
+resources/
 buildTmp/
 buildTmp/*
 www/protocols/*
